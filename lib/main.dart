@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:reunioes/pages/homepage.dart';
+import 'package:reunioes/pages/home_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.purple,
+        primarySwatch: Colors.deepPurple,
       ),
       home: HomePage(),
       // home: const MyHomePage(title: 'Flutter Demo Home Page'),
@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
  * ==== COISAS PARA PESQUISAR SOBRE ESTE PROJETO. ====
  * ===================================================
  * 
- * Navegação entre telas
+ * Navegação / Rotas entre telas
  * Maneiras de filtrar uma 'ListView'
  * Persistência de Dados, integração e manipulação de dados com FireBase
  * (Criar, Ler, Atualizar, Deletar dados ==> CRUD em FireBase)
