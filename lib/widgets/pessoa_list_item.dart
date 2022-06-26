@@ -11,16 +11,19 @@ class PessoaListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(5),
-        color: Colors.grey[200],
-      ),
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        children: [
-          Text(pessoa.nome),
-        ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5.0),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(5),
+          color: Colors.grey[200],
+        ),
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Text(pessoa.nome),
+          ],
+        ),
       ),
     );
   }

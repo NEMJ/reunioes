@@ -13,6 +13,18 @@ class Pessoa {
     required this.dataNascimento,
   });
 
+  Pessoa.fromJason(Map<String, dynamic> json)
+    : codigo = json['codigo'] as int,
+      nome = json['nome'] as String,
+      rua = json['rua'] as String,
+      bairro = json['bairro'] as String,
+      cidade = json['cidade'] as String,
+      uf = json['uf'] as String,
+      contato = json['contato'] as String,
+      profissao = json['profissao'] as String,
+      localTrabalho = json['localTrabalho'] as String,
+      dataNascimento = json['dataNascimento'] as String;
+
   int codigo;
   String nome;
   String? apelido;
@@ -24,4 +36,20 @@ class Pessoa {
   String profissao;
   String localTrabalho;
   String dataNascimento;
+
+  Map<String, dynamic> toJson() {
+    return {
+      'codigo' : codigo,
+      'nome' : nome,
+      'apelido' : apelido,
+      'rua' : rua,
+      'bairro' : bairro,
+      'cidade' : cidade,
+      'uf' : uf,
+      'contato' : contato,
+      'profissao' : profissao,
+      'localTrabalho' : localTrabalho,
+      'dataNascimento' : dataNascimento
+    };
+  }
 }

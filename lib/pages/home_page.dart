@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
-import 'cadastro_pessoas_page.dart';
+import 'lista_pessoas_page.dart';
 import 'cadastro_reunioes_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -30,7 +30,7 @@ class _HomePageState extends State<HomePage> {
                     Navigator.push(
                       context,
                       PageTransition(
-                        child: const CadastroPessoasPage(),
+                        child: const ListaPessoasPage(),
                         type: PageTransitionType.leftToRight,
                         // alignment: Alignment.center,
                         // duration: const Duration(milliseconds: 600),
