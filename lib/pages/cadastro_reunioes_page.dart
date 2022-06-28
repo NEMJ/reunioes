@@ -1,7 +1,12 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import '../data/reunioes_dao.dart';
+import '../models/reuniao_model.dart';
 
 class CadastroReunioesPage extends StatefulWidget {
   const CadastroReunioesPage({ Key? key }) : super(key: key);
+
+  get reunioesDao => null;
 
   @override
   State<CadastroReunioesPage> createState() => _CadastroReunioesPageState();
@@ -9,6 +14,9 @@ class CadastroReunioesPage extends StatefulWidget {
 
 class _CadastroReunioesPageState extends State<CadastroReunioesPage> {
   final TextEditingController descricaoController = TextEditingController();
+  final reunioesDao = ReunioesDao();
+
+  final DatabaseReference _reunioesRef = FirebaseDatabase.instance.ref().child('reunioes');
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +46,12 @@ class _CadastroReunioesPageState extends State<CadastroReunioesPage> {
               ),
             ),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () async {
+                await _reunioesRef.set({
+                  "descrição" : descricaoController.text,
+                });
+                descricaoController.clear();
+              },
               child: const Text('Cadastrar'),
             ),
           ]
