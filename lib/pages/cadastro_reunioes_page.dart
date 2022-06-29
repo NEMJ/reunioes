@@ -1,22 +1,29 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import '../data/reunioes_dao.dart';
+import 'package:uuid/uuid.dart';
 import '../models/reuniao_model.dart';
 
 class CadastroReunioesPage extends StatefulWidget {
   const CadastroReunioesPage({ Key? key }) : super(key: key);
-
-  get reunioesDao => null;
 
   @override
   State<CadastroReunioesPage> createState() => _CadastroReunioesPageState();
 }
 
 class _CadastroReunioesPageState extends State<CadastroReunioesPage> {
-  final TextEditingController descricaoController = TextEditingController();
-  final reunioesDao = ReunioesDao();
+  // Instancia do banco Cloud Firestore
+  FirebaseFirestore db = FirebaseFirestore.instance;
 
-  final DatabaseReference _reunioesRef = FirebaseDatabase.instance.ref().child('reunioes');
+  final TextEditingController descricaoController = TextEditingController();
+
+  @override
+  void initState() {
+    // Atualização Inicial
+
+    // Atualização em Tempo Real
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,16 +53,27 @@ class _CadastroReunioesPageState extends State<CadastroReunioesPage> {
               ),
             ),
             ElevatedButton(
-              onPressed: () async {
-                await _reunioesRef.set({
-                  "descrição" : descricaoController.text,
-                });
-                descricaoController.clear();
-              },
+              onPressed: sendData,
               child: const Text('Cadastrar'),
             ),
           ]
         ),
+      ),
+    );
+  }
+
+  void sendData() {
+    // Geração do ID
+    String id = Uuid().v1();
+    db.collection('reunioes').doc(id).set({
+      "descricao": descricaoController.text,
+    });
+
+    // Feedback visual
+    descricaoController.text = "";
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Salvo no Firestore"),
       ),
     );
   }
