@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:reunioes/pages/test_firestore_page.dart';
 import 'lista_pessoas_page.dart';
 import 'cadastro_reunioes_page.dart';
 
@@ -45,7 +46,7 @@ class _HomePageState extends State<HomePage> {
                     Navigator.push(
                       context,
                       PageTransition(
-                        child: const CadastroReunioesPage(),
+                        child: const TestFirestorePage(),
                         type: PageTransitionType.rightToLeft,
                       ),
                     );
