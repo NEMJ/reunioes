@@ -46,7 +46,7 @@ class _HomePageState extends State<HomePage> {
                     Navigator.push(
                       context,
                       PageTransition(
-                        child: const TestFirestorePage(),
+                        child: const CadastroReunioesPage(),
                         type: PageTransitionType.rightToLeft,
                       ),
                     );
@@ -54,6 +54,23 @@ class _HomePageState extends State<HomePage> {
                   child: const Text('Criar Reunião'),
                 ),
               ]
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                        child: const TestFirestorePage(),
+                        type: PageTransitionType.bottomToTop,
+                      ),
+                    );
+                  },
+                  child: const Text('Testes de Integração'),
+                ),
+              ],
             ),
           ]
         ),

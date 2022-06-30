@@ -22,6 +22,14 @@ class _TestFirestorePageState extends State<TestFirestorePage> {
     refresh();
     
     // Atualização em Tempo Real
+    db.collection("reunioes").snapshots().listen((query) {
+      listReunioes = [];
+      query.docs.forEach((doc) {
+        setState(() {
+          listReunioes.add(doc.get("name"));
+        });
+      });
+    });
 
     super.initState();
   }
@@ -33,7 +41,7 @@ class _TestFirestorePageState extends State<TestFirestorePage> {
         title: const Text("Test Cloud Firestore"),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: refresh,
+        onPressed: () => refresh(),
         child: const Icon(Icons.refresh),
       ),
       body: Padding(
@@ -42,14 +50,14 @@ class _TestFirestorePageState extends State<TestFirestorePage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const Text(
-              "Vamos gravar um nome na nuvem?",
+              "Vamos gravar um registro na nuvem?",
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             TextField(
               controller: _textController,
               decoration: const InputDecoration(
-                labelText: "Insira um nome",
+                labelText: "Insira uma descrição",
               ),
             ),
             ElevatedButton(
@@ -76,13 +84,26 @@ class _TestFirestorePageState extends State<TestFirestorePage> {
     );
   }
 
-  void refresh() {
+  void refresh() async {
     // Atualização Manual
+    QuerySnapshot query = await db.collection("reunioes").get();
+
+    listReunioes = [];
+    query.docs.forEach((doc) {
+      String name = doc.get("name");
+      setState(() {
+        listReunioes.add(name);
+      });
+    });
   }
 
   void sendData() {
     // Geração do ID
     String id = Uuid().v1();
+    db.collection("reunioes").doc(id).set({
+      "id": id,
+      "name": _textController.text,
+    });
 
     // Feedback visual
     _textController.text = "";
@@ -93,5 +114,3 @@ class _TestFirestorePageState extends State<TestFirestorePage> {
     );
   }
 }
-
-// 11 min  --   https://www.youtube.com/watch?v=KWWTTY6gSw4&t=1s
