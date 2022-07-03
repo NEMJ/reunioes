@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:reunioes/pages/test_firestore_page.dart';
-import 'lista_pessoas_page.dart';
-import 'cadastro_reunioes_page.dart';
+import 'package:reunioes/pages/participante/participantes_list_page.dart';
+import './reuniao/reunioes_list_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({ Key? key }) : super(key: key);
@@ -31,7 +30,7 @@ class _HomePageState extends State<HomePage> {
                     Navigator.push(
                       context,
                       PageTransition(
-                        child: const ListaPessoasPage(),
+                        child: const ParticipantesListPage(),
                         type: PageTransitionType.leftToRight,
                         // alignment: Alignment.center,
                         // duration: const Duration(milliseconds: 600),
@@ -39,38 +38,21 @@ class _HomePageState extends State<HomePage> {
                       ),
                     );
                   },
-                  child: const Text('Criar Pessoa'),
+                  child: const Text('Pessoas'),
                 ),
                 ElevatedButton(
                   onPressed: () {
                     Navigator.push(
                       context,
                       PageTransition(
-                        child: const CadastroReunioesPage(),
+                        child: const ReunioesListPage(),
                         type: PageTransitionType.rightToLeft,
                       ),
                     );
                   },
-                  child: const Text('Criar Reunião'),
+                  child: const Text('Reuniões'),
                 ),
               ]
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      PageTransition(
-                        child: const TestFirestorePage(),
-                        type: PageTransitionType.bottomToTop,
-                      ),
-                    );
-                  },
-                  child: const Text('Testes de Integração'),
-                ),
-              ],
             ),
           ]
         ),

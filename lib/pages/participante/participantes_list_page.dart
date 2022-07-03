@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
-import '../data/pessoas_data.dart';
-import '../models/pessoa_model.dart';
-import '../widgets/pessoa_list_item.dart';
-import 'cadastro_pessoas_page.dart';
+import 'package:reunioes/data/participantes_data.dart';
+import 'package:reunioes/models/participante_model.dart';
+import 'package:reunioes/widgets/participante_list_item.dart';
+import 'participante_detail_page.dart';
 
-class ListaPessoasPage extends StatefulWidget {
-  const ListaPessoasPage({ Key? key }) : super(key: key);
+class ParticipantesListPage extends StatefulWidget {
+  const ParticipantesListPage({ Key? key }) : super(key: key);
 
   @override
-  State<ListaPessoasPage> createState() => _ListaPessoasPageState();
+  State<ParticipantesListPage> createState() => _ParticipantesListPageState();
 }
 
-class _ListaPessoasPageState extends State<ListaPessoasPage> {
+class _ParticipantesListPageState extends State<ParticipantesListPage> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Cadastro de Pessoas"),
+          title: const Text("Cadastro de Participantes"),
         ),
         body: Container(
           padding: const EdgeInsets.all(16),
@@ -28,7 +28,7 @@ class _ListaPessoasPageState extends State<ListaPessoasPage> {
               const Padding(
                 padding: EdgeInsets.only(bottom: 10.0),
                 child: Text(
-                  "Lista de Pessoas",
+                  "Lista de Participantes",
                   style: TextStyle(
                     fontSize: 30,
                   ),
@@ -38,8 +38,8 @@ class _ListaPessoasPageState extends State<ListaPessoasPage> {
                 child: ListView(
                   shrinkWrap: true,
                   children: [
-                    for(Pessoa pessoa in pessoas)
-                      Center(child: PessoaListItem(pessoa: pessoa)),
+                    for(Participante participante in participantes)
+                      Center(child: ParticipanteListItem(participante: participante)),
                   ],
                 ),
               ),
@@ -53,12 +53,12 @@ class _ListaPessoasPageState extends State<ListaPessoasPage> {
                         Navigator.push(
                           context,
                           PageTransition(
-                            child: const CadastroPessoasPage(),
+                            child: const ParticipanteDetailPage(),
                             type: PageTransitionType.bottomToTop,
                           ),
                         );
                       },
-                      child: Text("Cadastrar Nova Pessoa")
+                      child: const Text("Novo Participante")
                     ),
                   ),
                 ],

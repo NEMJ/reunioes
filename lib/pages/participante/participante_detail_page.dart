@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import '../widgets/form_item.dart';
+import 'package:reunioes/widgets/form_item.dart';
 
-class CadastroPessoasPage extends StatefulWidget {
-  const CadastroPessoasPage({ Key? key }) : super(key: key);
+class ParticipanteDetailPage extends StatefulWidget {
+  const ParticipanteDetailPage({ Key? key }) : super(key: key);
 
   @override
-  State<CadastroPessoasPage> createState() => _CadastroPessoasPageState();
+  State<ParticipanteDetailPage> createState() => _ParticipanteDetailPageState();
 }
 
-class _CadastroPessoasPageState extends State<CadastroPessoasPage> {
+class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

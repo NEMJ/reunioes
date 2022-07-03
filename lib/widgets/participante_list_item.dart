@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import '../models/pessoa_model.dart';
+import '../models/participante_model.dart';
 
-class PessoaListItem extends StatelessWidget {
-  const PessoaListItem({
+class ParticipanteListItem extends StatelessWidget {
+  const ParticipanteListItem({
     Key? key,
-    required this.pessoa,
+    required this.participante,
     }) : super(key: key);
 
-  final Pessoa pessoa;
+  final Participante participante;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class PessoaListItem extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Row(
           children: [
-            Text(pessoa.nome),
+            Text(participante.nome),
           ],
         ),
       ),

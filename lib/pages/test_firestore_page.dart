@@ -26,7 +26,7 @@ class _TestFirestorePageState extends State<TestFirestorePage> {
       listReunioes = [];
       query.docs.forEach((doc) {
         setState(() {
-          listReunioes.add(doc.get("name"));
+          listReunioes.add(doc.get("descricao"));
         });
       });
     });
@@ -90,7 +90,7 @@ class _TestFirestorePageState extends State<TestFirestorePage> {
 
     listReunioes = [];
     query.docs.forEach((doc) {
-      String name = doc.get("name");
+      String name = doc.get("descricao");
       setState(() {
         listReunioes.add(name);
       });
@@ -102,7 +102,7 @@ class _TestFirestorePageState extends State<TestFirestorePage> {
     String id = Uuid().v1();
     db.collection("reunioes").doc(id).set({
       "id": id,
-      "name": _textController.text,
+      "descricao": _textController.text,
     });
 
     // Feedback visual

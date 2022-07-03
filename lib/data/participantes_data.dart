@@ -1,7 +1,7 @@
-import '../models/pessoa_model.dart';
+import '../models/participante_model.dart';
 
-List<Pessoa> pessoas = [
-  Pessoa(
+List<Participante> participantes = [
+  Participante(
     codigo: 01,
     nome: "José Augusto Silva",
     rua: "Rua das flores",
@@ -13,7 +13,7 @@ List<Pessoa> pessoas = [
     localTrabalho: "M&A Contabilidade",
     dataNascimento: "20/07/1990",
   ),
-  Pessoa(
+  Participante(
     codigo: 02,
     nome: "Dolores Reis Dias",
     rua: "Coronel Brigadeiro",
@@ -25,7 +25,7 @@ List<Pessoa> pessoas = [
     localTrabalho: "Não especificado",
     dataNascimento: "15/09/1975",
   ),
-  Pessoa(
+  Participante(
     codigo: 03,
     nome: "Reinaldo Fernando Filho",
     rua: "Nossa Senhora das Graças",
@@ -37,7 +37,7 @@ List<Pessoa> pessoas = [
     localTrabalho: "PrópriaResidência",
     dataNascimento: "03/11/1980",
   ),
-  Pessoa(
+  Participante(
     codigo: 04,
     nome: "Silvia Pimenta Aragão",
     rua: "Otacílio Dias Fernandes",
@@ -49,7 +49,7 @@ List<Pessoa> pessoas = [
     localTrabalho: "Silvia Cortes e Fios",
     dataNascimento: "19/08/1981",
   ),
-  Pessoa(
+  Participante(
     codigo: 05,
     nome: "Amadeu Rogério Junior",
     rua: "Oscar Gilberto",
@@ -61,7 +61,7 @@ List<Pessoa> pessoas = [
     localTrabalho: "Restaurante Fome e Tempero",
     dataNascimento: "16/02/1997",
   ),
-  Pessoa(
+  Participante(
     codigo: 06,
     nome: "Anthony Alves Macedo",
     rua: "Avenida São João",
@@ -73,7 +73,7 @@ List<Pessoa> pessoas = [
     localTrabalho: "Clínica Patinhas",
     dataNascimento: "09/08/1991"
   ),
-  Pessoa(
+  Participante(
     codigo: 07,
     nome: "Raquel Peixoto Neves",
     rua: "Rua da Imprensa",
@@ -85,7 +85,7 @@ List<Pessoa> pessoas = [
     localTrabalho: "Clínica Branco Sorriso",
     dataNascimento: "01/16/1989"
   ),
-  Pessoa(
+  Participante(
     codigo: 08,
     nome: "Leonardo Silveira Siqueira",
     rua: "Avenida Rio Branco",
@@ -97,7 +97,7 @@ List<Pessoa> pessoas = [
     localTrabalho: "Décimo Quarto Distrito",
     dataNascimento: "05/06/1986"
   ),
-  Pessoa(
+  Participante(
     codigo: 09,
     nome: "Giovanna Teixeira Abraão",
     rua: "Rua Serra de Bragança",
@@ -109,7 +109,7 @@ List<Pessoa> pessoas = [
     localTrabalho: "EMEB Franco Correa Ferreira",
     dataNascimento: "08/13/1998"
   ),
-  Pessoa(
+  Participante(
     codigo: 10,
     nome: "Henrique Pereira Moura",
     rua: "Rua Tenente-Coronel Cardoso",
@@ -121,7 +121,7 @@ List<Pessoa> pessoas = [
     localTrabalho: "Décimo Segundo Batalhão",
     dataNascimento: "04/22/1993"
   ),
-  Pessoa(
+  Participante(
     codigo: 11,
     nome: "Benjamin Rocha da Paz",
     rua: "Rua Barão de Vitória",
@@ -133,7 +133,7 @@ List<Pessoa> pessoas = [
     localTrabalho: "Pães e Cia",
     dataNascimento: "02/24/2000"
   ),
-  Pessoa(
+  Participante(
     codigo: 12,
     nome: "Leonardo Augusto Fonseca",
     rua: "Travessa Antônio Ferreira",
@@ -145,7 +145,7 @@ List<Pessoa> pessoas = [
     localTrabalho: "Esteio",
     dataNascimento: "03/29/1986"
   ),
-  Pessoa(
+  Participante(
     codigo: 13,
     nome: "Richard Gilberto Rodrigues",
     rua: "Rua Carlos Augusto Cornelsen",
@@ -157,7 +157,7 @@ List<Pessoa> pessoas = [
     localTrabalho: "Pala's Hotel",
     dataNascimento: "08/19/1998"
   ),
-  Pessoa(
+  Participante(
     codigo: 14,
     nome: "Luana Guimarães Cintra",
     rua: "Rua das Fiandeiras",
@@ -169,7 +169,7 @@ List<Pessoa> pessoas = [
     localTrabalho: "LGC Advocacia",
     dataNascimento: "11/22/1997"
   ),
-  Pessoa(
+  Participante(
     codigo: 15,
     nome: "Cintia Ferdinando Rocha",
     rua: "Rua Arlindo Nogueira",
