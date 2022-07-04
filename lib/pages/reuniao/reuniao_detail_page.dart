@@ -186,11 +186,6 @@ class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
       "horarioTermino": _horarioTerminoController.text
     });
 
-    // Limpeza do conteúdo de todos os TextFields para uma nova inserção
-    _descricaoController.text = '';
-    _diaSemanaController.text = '';
-    _horarioInicioController.text = '';
-    _horarioTerminoController.text = '';
 
     // confirmação visual de sucesso
     ScaffoldMessenger.of(context).showSnackBar(
@@ -198,5 +193,11 @@ class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
         content: Text("Reunião ${_descricaoController.text} salva com sucesso"),
       ),
     );
+    
+    // Limpeza do conteúdo de todos os TextFields para uma nova inserção
+    _descricaoController.text = '';
+    _diaSemanaController.text = '';
+    _horarioInicioController.text = '';
+    _horarioTerminoController.text = '';
   }
 }
