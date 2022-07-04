@@ -11,6 +11,15 @@ class ReunioesListPage extends StatefulWidget {
 }
 
 class ReunioesListPageState extends State<ReunioesListPage> {
+
+  @override
+  void dispose() {
+    setState(() {
+      reunioesList.clear();
+    });
+    super.dispose();
+  }
+
   // Instancia do banco Cloud Firestore
   FirebaseFirestore db = FirebaseFirestore.instance;
   List<Reuniao> reunioesList =[];
@@ -23,22 +32,28 @@ class ReunioesListPageState extends State<ReunioesListPage> {
     // Atualização em Tempo Real
     db.collection('reunioes').snapshots().listen((query) {
       reunioesList = [];
-      query.docs.forEach((doc) {
-        var reuniao = Reuniao(
-          id: doc.get('id'),
-          descricao: doc.get('descricao'),
-          diaSemana: doc.get('diaSemana'),
-          horarioInicio: doc.get("horarioInicio"),
-          horarioTermino: doc.get("horarioTermino"),
-        );
-        setState(() {
-          reunioesList.add(reuniao);
+      if(query.docs.isEmpty) {
+        setState(() {});
+      } else {
+        query.docs.forEach((doc) {
+          var reuniao = Reuniao(
+            id: doc.get('id'),
+            descricao: doc.get('descricao'),
+            diaSemana: doc.get('diaSemana'),
+            horarioInicio: doc.get("horarioInicio"),
+            horarioTermino: doc.get("horarioTermino"),
+          );
+          setState(() {
+            reunioesList.add(reuniao);
+          });
         });
-      });    
+      }
     });
 
     super.initState();
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -78,9 +93,7 @@ class ReunioesListPageState extends State<ReunioesListPage> {
                             title: Text("Deseja realmente excluir a reunião ${reunioesList[index].descricao}?"),
                             actions: [
                               ElevatedButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
+                                onPressed: () => Navigator.of(context).pop(),
                                 child: const Text("Cancelar")
                               ),
                               ElevatedButton(

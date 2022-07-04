@@ -163,6 +163,13 @@ class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
       'horarioInicio': _horarioInicioController.text,
       'horarioTermino': _horarioTerminoController.text
     });
+
+    // confirmação visual de sucesso
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Reunião ${_descricaoController.text} atualizada com sucesso"),
+      ),
+    );
   }
 
   // Envio de dados para o banco e tratamento interno dos TextFields
@@ -187,8 +194,8 @@ class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
 
     // confirmação visual de sucesso
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Reunião salva com sucesso"),
+      SnackBar(
+        content: Text("Reunião ${_descricaoController.text} salva com sucesso"),
       ),
     );
   }
