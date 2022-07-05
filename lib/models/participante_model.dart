@@ -1,6 +1,6 @@
 class Participante {
   Participante({
-    required this.codigo,
+    required this.id,
     required this.nome,
     this.apelido,
     required this.rua,
@@ -13,7 +13,7 @@ class Participante {
     required this.dataNascimento,
   });
 
-  int codigo;
+  String id;
   String nome;
   String? apelido;
   String rua;
@@ -26,7 +26,7 @@ class Participante {
   String dataNascimento;
 
   Participante.fromJason(Map<String, dynamic> json) :
-    codigo = json['codigo'] as int,
+    id = json['id'] as String,
     nome = json['nome'] as String,
     rua = json['rua'] as String,
     bairro = json['bairro'] as String,
@@ -39,9 +39,8 @@ class Participante {
 
   Map<String, dynamic> toJson() {
     return {
-      'codigo' : codigo,
+      'id' : id,
       'nome' : nome,
-      'apelido' : apelido,
       'rua' : rua,
       'bairro' : bairro,
       'cidade' : cidade,

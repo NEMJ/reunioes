@@ -95,20 +95,19 @@ class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
               ),
             ),
             ElevatedButton(
+              child: (widget.reuniao != null) 
+                ? const Text("Salvar Alterações")
+                : const Text("Confirmar Cadastro"),
               onPressed: () {
+                // Se foi passado o objeto para a página, abre-se um dialog a respeito do update
                 (widget.reuniao != null)
-
-                  // Se foi passado o objeto para a página, abre-se um dialog a respeito do update
-                  
                   ? showDialog(
                     context: context,
                     builder: (_) => AlertDialog(
                       title: Text("Atualizar dados da reunião ${widget.reuniao!.descricao}?"),
                       actions: [
                         ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
+                          onPressed: () => Navigator.of(context).pop(),
                           child: const Text("Cancelar")
                         ),
                         ElevatedButton(
@@ -123,7 +122,6 @@ class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
                   )
                   : sendData();
               },
-              child: (widget.reuniao != null) ? Text("Salvar Alterações") : Text("Confirmar Cadastro"),
             ),
           ],
         ),
@@ -178,14 +176,13 @@ class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
     String id = const Uuid().v1();
 
     // Envio de um novo registro para o banco na coleção 'reunioes'
-    db.collection('reunioes').doc(id).set({
+    db.collection('participante').doc(id).set({
       "id": id,
       "descricao": _descricaoController.text,
       "diaSemana": _diaSemanaController.text,
       "horarioInicio": _horarioInicioController.text,
       "horarioTermino": _horarioTerminoController.text
     });
-
 
     // confirmação visual de sucesso
     ScaffoldMessenger.of(context).showSnackBar(

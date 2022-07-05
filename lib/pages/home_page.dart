@@ -38,7 +38,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                     );
                   },
-                  child: const Text('Pessoas'),
+                  child: const Text('Participantes'),
                 ),
                 ElevatedButton(
                   onPressed: () {

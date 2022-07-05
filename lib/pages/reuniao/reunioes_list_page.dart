@@ -12,21 +12,13 @@ class ReunioesListPage extends StatefulWidget {
 
 class ReunioesListPageState extends State<ReunioesListPage> {
 
-  @override
-  void dispose() {
-    setState(() {
-      reunioesList.clear();
-    });
-    super.dispose();
-  }
-
   // Instancia do banco Cloud Firestore
   FirebaseFirestore db = FirebaseFirestore.instance;
-  List<Reuniao> reunioesList =[];
+  List<Reuniao> reunioesList = [];
 
   @override
   void initState() {
-    // Atualização Inicial
+    // Inicialização dos Dados
     initFirestore();
 
     // Atualização em Tempo Real
@@ -53,80 +45,84 @@ class ReunioesListPageState extends State<ReunioesListPage> {
     super.initState();
   }
 
-
+  @override
+  void dispose() {
+    setState(() => reunioesList.clear());
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Cadastro de Reuniões"),
-      ),
-      body: Container(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          // mainAxisSize: MainAxisSize.min,
-          children: [
-            Flexible(
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: reunioesList.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
-                    child: ListTile(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      tileColor: Colors.grey[200],
-                      leading: const CircleAvatar(
-                        child: Icon(Icons.business_rounded),
-                        // backgroundColor: Colors.white,
-                      ),
-                      title: Text(reunioesList[index].descricao),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.cancel),
-                        color: Colors.red[400],
-                        onPressed: () => showDialog(
-                          context: context,
-                          builder: (_) => AlertDialog(
-                            title: Text("Deseja realmente excluir a reunião ${reunioesList[index].descricao}?"),
-                            actions: [
-                              ElevatedButton(
-                                onPressed: () => Navigator.of(context).pop(),
-                                child: const Text("Cancelar")
-                              ),
-                              ElevatedButton(
-                                onPressed: () {
-                                  delete(reunioesList[index].id);
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text("Deletar")
-                              )
-                            ],
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Cadastro de Reuniões"),
+        ),
+        body: Container(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Flexible(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: reunioesList.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: ListTile(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        tileColor: Colors.grey[200],
+                        leading: const CircleAvatar(
+                          child: Icon(Icons.business_rounded),
+                        ),
+                        title: Text(reunioesList[index].descricao),
+                        onTap: () {
+                          detailReuniao(reunioesList[index]);
+                        },
+                        trailing: IconButton(
+                          icon: const Icon(Icons.cancel),
+                          color: Colors.red[400],
+                          onPressed: () => showDialog(
+                            context: context,
+                            builder: (_) => AlertDialog(
+                              title: Text("Deseja realmente excluir a reunião ${reunioesList[index].descricao}?"),
+                              actions: [
+                                ElevatedButton(
+                                  child: const Text("Cancelar"),
+                                  onPressed: () => Navigator.of(context).pop(),
+                                ),
+                                ElevatedButton(
+                                  child: const Text("Deletar"),
+                                  onPressed: () {
+                                    delete(reunioesList[index].id);
+                                    Navigator.of(context).pop();
+                                  },
+                                )
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                      onTap: () {
-                        detailReuniao(reunioesList[index]);
-                      },
+                    );
+                  }
+                ),
+              ),
+              ElevatedButton(
+                child: const Text("Cadastrar Nova Reunião"),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => ReuniaoDetailPage(),
                     ),
                   );
-                }
+                },
               ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => ReuniaoDetailPage(),
-                  ),
-                );
-              },
-              child: const Text("Cadastrar Nova Reunião"),
-            ),
-          ]
+            ]
+          ),
         ),
       ),
     );
@@ -139,14 +135,14 @@ class ReunioesListPageState extends State<ReunioesListPage> {
     reunioesList = [];
     // Para cada documento da coleção é gerado um objeto reunião e adicionado à lista de objtos do mesmo tipo
     query.docs.forEach((doc) {
+      Reuniao reuniao = Reuniao(
+        id: doc.get("id"),
+        descricao: doc.get("descricao"),
+        diaSemana: doc.get("diaSemana"),
+        horarioInicio: doc.get("horarioInicio"),
+        horarioTermino: doc.get("horarioTermino"),
+      );
       setState(() {
-        Reuniao reuniao = Reuniao(
-          id: doc.get("id"),
-          descricao: doc.get("descricao"),
-          diaSemana: doc.get("diaSemana"),
-          horarioInicio: doc.get("horarioInicio"),
-          horarioTermino: doc.get("horarioTermino"),
-        );
         reunioesList.add(reuniao);
       });
     });
@@ -163,8 +159,5 @@ class ReunioesListPageState extends State<ReunioesListPage> {
 
   void delete(String id) async {
     db.collection('reunioes').doc(id).delete();
-    setState(() {
-      reunioesList;
-    });
   }
 }
