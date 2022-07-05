@@ -9,6 +9,7 @@ class ReuniaoDetailPage extends StatefulWidget {
     this.reuniao
   }) : super(key: key);
 
+  // Caso for um novo cadastro este objeto é nulo para que o formulário esteja com os campos vazios
   Reuniao? reuniao;
 
   @override
@@ -16,15 +17,22 @@ class ReuniaoDetailPage extends StatefulWidget {
 }
 
 class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
-  final TextEditingController _descricaoController = TextEditingController();
-  final TextEditingController _diaSemanaController = TextEditingController();
-  final TextEditingController _horarioInicioController = TextEditingController();
-  final TextEditingController _horarioTerminoController = TextEditingController();
+  // É instanciado um 'controller' para cada campo de texto
+  final _descricaoController = TextEditingController();
+  final _diaSemanaController = TextEditingController();
+  final _horarioInicioController = TextEditingController();
+  final _horarioTerminoController = TextEditingController();
 
+  // Instância do banco Cloud Firestore
   FirebaseFirestore db = FirebaseFirestore.instance;
 
   @override
   void initState() {
+    /* 
+     * Cada campo de texto é iniciado de acordo com a situação no 'initControllers()'
+     * - Se for inserção de um novo registro, é vazio;
+     * - Se for alteração, aparecem as informações da reunião selecionada
+    */
     initControllers();
     super.initState();
   }
@@ -40,66 +48,66 @@ class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              child: Flexible(
-                child: ListView(
-                  shrinkWrap: true,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: TextField(
-                        controller: _descricaoController,
-                        decoration: const InputDecoration(
-                          labelText: 'Descricao',
-                          hintText: 'Ex: Reunião Geral',
-                          labelStyle: TextStyle(fontSize: 17.5),
-                          border: OutlineInputBorder(),
-                        ),
+            Flexible(
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+                  // Cada um dos campos de texto tem esse mesmo padrão
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: TextField(
+                      controller: _descricaoController,
+                      decoration: const InputDecoration(
+                        labelText: 'Descricao',
+                        hintText: 'Ex: Reunião Geral',
+                        labelStyle: TextStyle(fontSize: 17.5),
+                        border: OutlineInputBorder(),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: TextField(
-                        controller: _diaSemanaController,
-                        decoration: const InputDecoration(
-                          labelText: 'Dia da Semana',
-                          labelStyle: TextStyle(fontSize: 17.5),
-                          border: OutlineInputBorder(),
-                        ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: TextField(
+                      controller: _diaSemanaController,
+                      decoration: const InputDecoration(
+                        labelText: 'Dia da Semana',
+                        labelStyle: TextStyle(fontSize: 17.5),
+                        border: OutlineInputBorder(),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: TextField(
-                        controller: _horarioInicioController,
-                        decoration: const InputDecoration(
-                          labelText: 'Hora Início',
-                          labelStyle: TextStyle(fontSize: 17.5),
-                          border: OutlineInputBorder(),
-                        ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: TextField(
+                      controller: _horarioInicioController,
+                      decoration: const InputDecoration(
+                        labelText: 'Hora Início',
+                        labelStyle: TextStyle(fontSize: 17.5),
+                        border: OutlineInputBorder(),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: TextField(
-                        controller: _horarioTerminoController,
-                        decoration: const InputDecoration(
-                          labelText: 'Hora Término',
-                          labelStyle: TextStyle(fontSize: 17.5),
-                          border: OutlineInputBorder(),
-                        ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: TextField(
+                      controller: _horarioTerminoController,
+                      decoration: const InputDecoration(
+                        labelText: 'Hora Término',
+                        labelStyle: TextStyle(fontSize: 17.5),
+                        border: OutlineInputBorder(),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
             ElevatedButton(
+              // Se não for recebido um objeto do tipo 'Reunião' o botão assume o primeiro texto, se não, o segundo
               child: (widget.reuniao != null) 
                 ? const Text("Salvar Alterações")
                 : const Text("Confirmar Cadastro"),
               onPressed: () {
-                // Se foi passado o objeto para a página, abre-se um dialog a respeito do update
+                // Se foi passado o objeto para a página, abre-se um dialog de confirmação a respeito da atualização
                 (widget.reuniao != null)
                   ? showDialog(
                     context: context,
@@ -130,11 +138,11 @@ class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
   }
 
   void initControllers() {
-    /* Se não for enviado um objeto 'Reuniao' significa que é uma nova inserção
+    /* Se a página não receber um objeto 'Reuniao' significa que é uma nova inserção
      * por isso os controllers são instanciados com uma string vazia
      * 
-     * Caso seja enviado um objeto 'Reuniao' cada controller recebe o conteúdo
-     * do campo correpondente
+     * Caso seja recebido um objeto 'Reuniao' cada controller recebe o conteúdo
+     * do campo correspondente
      */
     
     if(widget.reuniao == null) {
@@ -154,20 +162,18 @@ class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
 
   // Atualização do documento selecionado no registro da tela anterior
   void update(String id) {
-    // Atualização de todos os campos
+    // Atualização de todos os campos no registro passado à esta página por parâmetro
     db.collection('reunioes').doc(id).update({
       'descricao': _descricaoController.text,
       'diaSemana': _diaSemanaController.text,
       'horarioInicio': _horarioInicioController.text,
       'horarioTermino': _horarioTerminoController.text
-    });
-
     // confirmação visual de sucesso
-    ScaffoldMessenger.of(context).showSnackBar(
+    }).then((value) => ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text("Reunião ${_descricaoController.text} atualizada com sucesso"),
       ),
-    );
+    ));
   }
 
   // Envio de dados para o banco e tratamento interno dos TextFields
@@ -182,16 +188,14 @@ class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
       "diaSemana": _diaSemanaController.text,
       "horarioInicio": _horarioInicioController.text,
       "horarioTermino": _horarioTerminoController.text
-    });
-
-    // confirmação visual de sucesso
-    ScaffoldMessenger.of(context).showSnackBar(
+    // Confirmação visual de sucesso
+    }).then((value) => ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text("Reunião ${_descricaoController.text} salva com sucesso"),
       ),
-    );
+    ));
 
-    // Limpeza do conteúdo de todos os TextFields para uma nova inserção
+    // Limpeza do conteúdo de todos os TextFields para uma nova inserção após a confirmação
     _descricaoController.text = '';
     _diaSemanaController.text = '';
     _horarioInicioController.text = '';
