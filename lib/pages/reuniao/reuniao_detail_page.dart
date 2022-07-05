@@ -176,7 +176,7 @@ class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
     String id = const Uuid().v1();
 
     // Envio de um novo registro para o banco na coleção 'reunioes'
-    db.collection('participante').doc(id).set({
+    db.collection('reunioes').doc(id).set({
       "id": id,
       "descricao": _descricaoController.text,
       "diaSemana": _diaSemanaController.text,
@@ -190,7 +190,7 @@ class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
         content: Text("Reunião ${_descricaoController.text} salva com sucesso"),
       ),
     );
-    
+
     // Limpeza do conteúdo de todos os TextFields para uma nova inserção
     _descricaoController.text = '';
     _diaSemanaController.text = '';
