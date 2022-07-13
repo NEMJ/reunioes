@@ -29,15 +29,20 @@ class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
 
   // GlobalKey para a validação do formulário de cadastro de reuniões
   final _formKey = GlobalKey<FormState>();
+  
+  
+  String? diaSemana;
+  final List<String> diasSemana = [
+    'Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'
+  ];
 
   // Máscara do campo de horario início / término
   final horario = MaskTextInputFormatter(
-    mask: '*@:&#',
+    mask: '*#:&#',
     filter: {
-      '*': RegExp(r'[0-2]'),
-      '@': RegExp(r'[0-3]'),
-      '&': RegExp(r'[0-5]'),
       '#': RegExp(r'[0-9]'),
+      '*': RegExp(r'[0-2]'),
+      '&': RegExp(r'[0-5]'),
     },
     type: MaskAutoCompletionType.eager,
   );
@@ -83,7 +88,7 @@ class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
                         ),
                         validator: (value) {
                           if(value == null || value.isEmpty) {
-                            return 'Informe uma descrição';
+                            return 'Campo obrigatório';
                           } else if(value.length > 30) {
                             return 'Máximo 30 caracteres';
                           } else {
@@ -94,26 +99,52 @@ class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(bottom: 16.0),
-                      child: TextFormField(
-                        controller: _diaSemanaController,
+                      child: DropdownButtonFormField(
+                        items: diasSemana
+                          .map((op) => DropdownMenuItem(
+                              value: op,
+                              child: Text(op),
+                            ),
+                          )
+                          .toList(),
+                        onChanged: (escolha) => setState(() => diaSemana = escolha as String?),
+                        value: (widget.reuniao != null) ? widget.reuniao!.diaSemana : diaSemana,
                         decoration: const InputDecoration(
                           labelText: 'Dia da Semana',
                           labelStyle: TextStyle(fontSize: 17.5),
                           border: OutlineInputBorder(),
                         ),
                         validator: (value) {
-                          if(value == null || value.isEmpty) {
-                            return 'Campo obrigatório';
-                          } else if(value.length < 3) {
-                            return 'Mínimo 3 caracteres';
-                          } else if(value.length > 7){
-                            return 'Máxmio 7 caracteres';
+                          if(value == null) {
+                            return 'Selecione um dia da semana';
                           } else {
                             return null;
                           }
                         }
                       ),
                     ),
+                    // Padding(
+                    //   padding: const EdgeInsets.only(bottom: 16.0),
+                    //   child: TextFormField(
+                    //     controller: _diaSemanaController,
+                    //     decoration: const InputDecoration(
+                    //       labelText: 'Dia da Semana',
+                    //       labelStyle: TextStyle(fontSize: 17.5),
+                    //       border: OutlineInputBorder(),
+                    //     ),
+                    //     validator: (value) {
+                    //       if(value == null || value.isEmpty) {
+                    //         return 'Campo obrigatório';
+                    //       } else if(value.length < 3) {
+                    //         return 'Mínimo 3 caracteres';
+                    //       } else if(value.length > 7){
+                    //         return 'Máxmio 7 caracteres';
+                    //       } else {
+                    //         return null;
+                    //       }
+                    //     }
+                    //   ),
+                    // ),
                     Padding(
                       padding: const EdgeInsets.only(bottom: 16.0),
                       child: TextFormField(
@@ -225,7 +256,7 @@ class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
       // Atualização de todos os campos no registro passado à esta página por parâmetro
       db.collection('reunioes').doc(id).update({
         'descricao': _descricaoController.text,
-        'diaSemana': _diaSemanaController.text,
+        'diaSemana': diaSemana,
         'horarioInicio': _horarioInicioController.text,
         'horarioTermino': _horarioTerminoController.text
       // Confirmação visual de sucesso
@@ -247,7 +278,7 @@ class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
       db.collection('reunioes').doc(id).set({
         "id": id,
         "descricao": _descricaoController.text,
-        "diaSemana": _diaSemanaController.text,
+        "diaSemana": diaSemana,
         "horarioInicio": _horarioInicioController.text,
         "horarioTermino": _horarioTerminoController.text
       // Confirmação visual de sucesso
