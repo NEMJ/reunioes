@@ -17,7 +17,6 @@ class ReuniaoDetailPage extends StatefulWidget {
   State<ReuniaoDetailPage> createState() => _ReuniaoDetailPageState();
 }
 
-class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
   // É instanciado um 'controller' para cada campo de texto
   final _descricaoController = TextEditingController();
   final _diaSemanaController = TextEditingController();
@@ -48,6 +47,7 @@ class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
     type: MaskAutoCompletionType.eager,
   );
 
+class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
   @override
   void initState() {
     /* 
@@ -263,11 +263,13 @@ class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
         "horarioInicio": _horarioInicioController.text,
         "horarioTermino": _horarioTerminoController.text
       // Confirmação visual de sucesso
-      }).then((value) => ScaffoldMessenger.of(context).showSnackBar(
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("Reunião '${_descricaoController.text}' salva com sucesso"),
         ),
-      ));
+      );
 
       // Limpeza do conteúdo de todos os TextFields para uma nova inserção após a confirmação
       _descricaoController.text = '';

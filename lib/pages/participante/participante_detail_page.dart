@@ -350,22 +350,24 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
         'localTrabalho': _localTrabalhoController.text,
         'dataNascimento': _dataNascimentoController.text,
       // Confirmação visual de sucesso
-      }).then((value) => ScaffoldMessenger.of(context).showSnackBar(
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("Participante ${_nomeController.text} cadastrado com sucesso"),
         ),
-      ));
-    }
+      );
 
-    // Limpeza do conteúdo de todos os TextFields para uma nova inserção
-    _nomeController.text = '';
-    _ruaController.text = '';
-    _bairroController.text = '';
-    _cidadeController.text = '';
-    _ufController.text = '';
-    _contatoController.text = '';
-    _profissaoController.text = '';
-    _localTrabalhoController.text = '';
-    _dataNascimentoController.text = '';
+      // Limpeza do conteúdo de todos os TextFields para uma nova inserção
+      _nomeController.text = '';
+      _ruaController.text = '';
+      _bairroController.text = '';
+      _cidadeController.text = '';
+      _ufController.text = '';
+      _contatoController.text = '';
+      _profissaoController.text = '';
+      _localTrabalhoController.text = '';
+      _dataNascimentoController.text = '';
+    }
   }
 }
