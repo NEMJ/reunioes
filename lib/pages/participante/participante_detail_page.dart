@@ -17,22 +17,25 @@ class ParticipanteDetailPage extends StatefulWidget {
   State<ParticipanteDetailPage> createState() => _ParticipanteDetailPageState();
 }
 
+// É instanciado um 'controller' para cada campo de texto
+final _nomeController = TextEditingController();
+final _ruaController = TextEditingController();
+final _bairroController = TextEditingController();
+final _cidadeController = TextEditingController();
+final _ufController = TextEditingController();
+final _contatoController = TextEditingController();
+final _profissaoController = TextEditingController();
+final _localTrabalhoController = TextEditingController();
+final _dataNascimentoController = TextEditingController();
+
+final _formKey = GlobalKey<FormState>();
+
+
 class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
-  // É instanciado um 'controller' para cada campo de texto
-  final _nomeController = TextEditingController();
-  final _ruaController = TextEditingController();
-  final _bairroController = TextEditingController();
-  final _cidadeController = TextEditingController();
-  final _ufController = TextEditingController();
-  final _contatoController = TextEditingController();
-  final _profissaoController = TextEditingController();
-  final _localTrabalhoController = TextEditingController();
-  final _dataNascimentoController = TextEditingController();
 
   // Instância do banco Cloud Firestore
   FirebaseFirestore db = FirebaseFirestore.instance;
 
-  final _formKey = GlobalKey<FormState>();
 
   final contatoMask = MaskTextInputFormatter(
     mask: '(##) # ####-####',
@@ -77,161 +80,161 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Flexible(
-                child: ListView(
-                  shrinkWrap: true,
-                  children: [
-                    // Cada um dos campos de texto tem esse mesmo padrão
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: TextFormField(
-                        controller: _nomeController,
-                        decoration: const InputDecoration(
-                          labelText: 'Nome',
-                          labelStyle: TextStyle(fontSize: 17.5),
-                          border: OutlineInputBorder(),
-                        ),
-                        validator: (value) {
-                          if(value == null || value.isEmpty) {
-                            return 'Informe o Nome';
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: TextFormField(
+                          controller: _nomeController,
+                          decoration: const InputDecoration(
+                            labelText: 'Nome',
+                            labelStyle: TextStyle(fontSize: 17.5),
+                            border: OutlineInputBorder(),
+                          ),
+                          validator: (value) {
+                            if(value == null || value.isEmpty) {
+                              return 'Informe o Nome';
+                            }
                           }
-                        }
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: TextFormField(
-                        controller: _ruaController,
-                        decoration: const InputDecoration(
-                          labelText: 'Rua',
-                          labelStyle: TextStyle(fontSize: 17.5),
-                          border: OutlineInputBorder(),
                         ),
-                        validator: (value) {
-                          if(value == null || value.isEmpty) {
-                            return 'Informe a Rua';
-                          }
-                        }
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: TextFormField(
-                        controller: _bairroController,
-                        decoration: const InputDecoration(
-                          labelText: 'Bairro',
-                          labelStyle: TextStyle(fontSize: 17.5),
-                          border: OutlineInputBorder(),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: TextFormField(
+                          controller: _ruaController,
+                          decoration: const InputDecoration(
+                            labelText: 'Rua',
+                            labelStyle: TextStyle(fontSize: 17.5),
+                            border: OutlineInputBorder(),
+                          ),
+                          validator: (value) {
+                            if(value == null || value.isEmpty) {
+                              return 'Informe a Rua';
+                            }
+                          }
                         ),
-                        validator: (value) {
-                          if(value == null || value.isEmpty) {
-                            return 'Informe o Bairro';
-                          }
-                        }
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: TextFormField(
-                        controller: _cidadeController,
-                        decoration: const InputDecoration(
-                          labelText: 'Cidade',
-                          labelStyle: TextStyle(fontSize: 17.5),
-                          border: OutlineInputBorder(),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: TextFormField(
+                          controller: _bairroController,
+                          decoration: const InputDecoration(
+                            labelText: 'Bairro',
+                            labelStyle: TextStyle(fontSize: 17.5),
+                            border: OutlineInputBorder(),
+                          ),
+                          validator: (value) {
+                            if(value == null || value.isEmpty) {
+                              return 'Informe o Bairro';
+                            }
+                          }
                         ),
-                        validator: (value) {
-                          if(value == null || value.isEmpty) {
-                            return 'Informe a Cidade';
-                          }
-                        }
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: TextFormField(
-                        controller: _ufController,
-                        decoration: const InputDecoration(
-                          labelText: 'UF',
-                          labelStyle: TextStyle(fontSize: 17.5),
-                          border: OutlineInputBorder(),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: TextFormField(
+                          controller: _cidadeController,
+                          decoration: const InputDecoration(
+                            labelText: 'Cidade',
+                            labelStyle: TextStyle(fontSize: 17.5),
+                            border: OutlineInputBorder(),
+                          ),
+                          validator: (value) {
+                            if(value == null || value.isEmpty) {
+                              return 'Informe a Cidade';
+                            }
+                          }
                         ),
-                        inputFormatters: [ ufMask ],
-                        validator: (value) {
-                          if(value == null || value.isEmpty) {
-                            return 'Informe a Unidade Federal';
-                          }
-                        }
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: TextFormField(
-                        controller: _contatoController,
-                        decoration: const InputDecoration(
-                          labelText: 'Contato',
-                          hintText: 'Ex: 016 99999-9999',
-                          labelStyle: TextStyle(fontSize: 17.5),
-                          border: OutlineInputBorder(),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: TextFormField(
+                          controller: _ufController,
+                          decoration: const InputDecoration(
+                            labelText: 'UF',
+                            labelStyle: TextStyle(fontSize: 17.5),
+                            border: OutlineInputBorder(),
+                          ),
+                          inputFormatters: [ ufMask ],
+                          validator: (value) {
+                            if(value == null || value.isEmpty) {
+                              return 'Informe a Unidade Federal';
+                            }
+                          }
                         ),
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [ contatoMask ],
-                        validator: (value) {
-                          if(value == null || value.isEmpty) {
-                            return 'Informe um número para contato';
-                          }
-                        }
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: TextFormField(
-                        controller: _profissaoController,
-                        decoration: const InputDecoration(
-                          labelText: 'Profissao',
-                          labelStyle: TextStyle(fontSize: 17.5),
-                          border: OutlineInputBorder(),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: TextFormField(
+                          controller: _contatoController,
+                          decoration: const InputDecoration(
+                            labelText: 'Contato',
+                            hintText: 'Ex: (16) 9 9999-9999',
+                            labelStyle: TextStyle(fontSize: 17.5),
+                            border: OutlineInputBorder(),
+                          ),
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [ contatoMask ],
+                          validator: (value) {
+                            if(value == null || value.isEmpty) {
+                              return 'Informe um número para contato';
+                            }
+                          }
                         ),
-                        validator: (value) {
-                          if(value == null || value.isEmpty) {
-                            return 'Informe a Profissão';
-                          }
-                        }
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: TextFormField(
-                        controller: _localTrabalhoController,
-                        decoration: const InputDecoration(
-                          labelText: 'Local de Trabalho',
-                          labelStyle: TextStyle(fontSize: 17.5),
-                          border: OutlineInputBorder(),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: TextFormField(
+                          controller: _profissaoController,
+                          decoration: const InputDecoration(
+                            labelText: 'Profissão',
+                            labelStyle: TextStyle(fontSize: 17.5),
+                            border: OutlineInputBorder(),
+                          ),
+                          validator: (value) {
+                            if(value == null || value.isEmpty) {
+                              return 'Informe a Profissão';
+                            }
+                          }
                         ),
-                        validator: (value) {
-                          if(value == null || value.isEmpty) {
-                            return 'Informe o Local de Trabalho';
-                          }
-                        }
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: TextFormField(
-                        controller: _dataNascimentoController,
-                        decoration: const InputDecoration(
-                          labelText: 'Data de nascimento',
-                          hintText: '08/12/1987',
-                          labelStyle: TextStyle(fontSize: 17.5),
-                          border: OutlineInputBorder(),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: TextFormField(
+                          controller: _localTrabalhoController,
+                          decoration: const InputDecoration(
+                            labelText: 'Local de Trabalho',
+                            labelStyle: TextStyle(fontSize: 17.5),
+                            border: OutlineInputBorder(),
+                          ),
+                          validator: (value) {
+                            if(value == null || value.isEmpty) {
+                              return 'Informe o Local de Trabalho';
+                            }
+                          }
                         ),
-                        inputFormatters: [ dataMask ],
-                        validator: (value) {
-                          if(value == null || value.isEmpty) {
-                            return 'Informe a Data de Nascimento';
-                          }
-                        }
                       ),
-                    ),
-                  ],
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: TextFormField(
+                          controller: _dataNascimentoController,
+                          decoration: const InputDecoration(
+                            labelText: 'Data de nascimento',
+                            hintText: '08/12/1987',
+                            labelStyle: TextStyle(fontSize: 17.5),
+                            border: OutlineInputBorder(),
+                          ),
+                          inputFormatters: [ dataMask ],
+                          validator: (value) {
+                            if(value == null || value.isEmpty) {
+                              return 'Informe a Data de Nascimento';
+                            }
+                          }
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               ElevatedButton(
