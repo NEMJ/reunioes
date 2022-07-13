@@ -219,6 +219,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
                         padding: const EdgeInsets.only(bottom: 16.0),
                         child: TextFormField(
                           controller: _dataNascimentoController,
+                          keyboardType: TextInputType.number,
                           decoration: const InputDecoration(
                             labelText: 'Data de nascimento',
                             hintText: '08/12/1987',

@@ -124,32 +124,11 @@ class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
                         }
                       ),
                     ),
-                    // Padding(
-                    //   padding: const EdgeInsets.only(bottom: 16.0),
-                    //   child: TextFormField(
-                    //     controller: _diaSemanaController,
-                    //     decoration: const InputDecoration(
-                    //       labelText: 'Dia da Semana',
-                    //       labelStyle: TextStyle(fontSize: 17.5),
-                    //       border: OutlineInputBorder(),
-                    //     ),
-                    //     validator: (value) {
-                    //       if(value == null || value.isEmpty) {
-                    //         return 'Campo obrigatório';
-                    //       } else if(value.length < 3) {
-                    //         return 'Mínimo 3 caracteres';
-                    //       } else if(value.length > 7){
-                    //         return 'Máxmio 7 caracteres';
-                    //       } else {
-                    //         return null;
-                    //       }
-                    //     }
-                    //   ),
-                    // ),
                     Padding(
                       padding: const EdgeInsets.only(bottom: 16.0),
                       child: TextFormField(
                         controller: _horarioInicioController,
+                        keyboardType: TextInputType.number,
                         decoration: const InputDecoration(
                           labelText: 'Hora Início',
                           labelStyle: TextStyle(fontSize: 17.5),
@@ -171,6 +150,7 @@ class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
                       padding: const EdgeInsets.only(bottom: 16.0),
                       child: TextFormField(
                         controller: _horarioTerminoController,
+                        keyboardType: TextInputType.number,
                         decoration: const InputDecoration(
                           labelText: 'Hora Término',
                           labelStyle: TextStyle(fontSize: 17.5),
