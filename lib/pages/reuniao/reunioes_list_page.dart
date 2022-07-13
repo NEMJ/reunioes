@@ -47,7 +47,7 @@ class ReunioesListPageState extends State<ReunioesListPage> {
 
   @override
   void dispose() {
-    setState(() => reunioesList.clear());
+    reunioesList.clear();
     super.dispose();
   }
 

@@ -52,7 +52,7 @@ class _ParticipantesListPageState extends State<ParticipantesListPage> {
 
   @override
   void dispose() {
-    setState(() => participantesList.clear());
+    participantesList.clear();
     super.dispose();
   }
 
