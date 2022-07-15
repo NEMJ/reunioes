@@ -17,35 +17,35 @@ class ReuniaoDetailPage extends StatefulWidget {
   State<ReuniaoDetailPage> createState() => _ReuniaoDetailPageState();
 }
 
-  // É instanciado um 'controller' para cada campo de texto
-  final _descricaoController = TextEditingController();
-  final _diaSemanaController = TextEditingController();
-  final _horarioInicioController = TextEditingController();
-  final _horarioTerminoController = TextEditingController();
 
-  // Instância do banco Cloud Firestore
-  FirebaseFirestore db = FirebaseFirestore.instance;
+// É instanciado um 'controller' para cada campo de texto
+final _descricaoController = TextEditingController();
+final _horarioInicioController = TextEditingController();
+final _horarioTerminoController = TextEditingController();
 
-  // GlobalKey para a validação do formulário de cadastro de reuniões
-  final _formKey = GlobalKey<FormState>();
-  
-  
-  String? diaSemana;
-  final List<String> diasSemana = [
-    'Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'
-  ];
+// Instância do banco Cloud Firestore
+FirebaseFirestore db = FirebaseFirestore.instance;
 
-  // Máscara do campo de horario início / término
-  final horario = MaskTextInputFormatter(
-    mask: '*@:&#',
-    filter: {
-      '*': RegExp(r'[0-2]'),
-      '@': RegExp(r'[0-3]'),
-      '&': RegExp(r'[0-5]'),
-      '#': RegExp(r'[0-9]'),
-    },
-    type: MaskAutoCompletionType.eager,
-  );
+// GlobalKey para a validação do formulário de cadastro de reuniões
+final _formKey = GlobalKey<FormState>();
+
+String? diaSemana;
+final List<String> diasSemana = [
+  'Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'
+];
+
+// Máscara do campo de horario início / término
+final horario = MaskTextInputFormatter(
+  mask: '*@:&#',
+  filter: {
+    '*': RegExp(r'[0-2]'),
+    '@': RegExp(r'[0-3]'),
+    '&': RegExp(r'[0-5]'),
+    '#': RegExp(r'[0-9]'),
+  },
+  type: MaskAutoCompletionType.eager,
+);
+
 
 class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
   @override
@@ -108,8 +108,8 @@ class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
                             ),
                           )
                           .toList(),
-                        onChanged: (escolha) => setState(() => diaSemana = escolha as String?),
-                        value: (widget.reuniao != null) ? widget.reuniao!.diaSemana : diaSemana,
+                        onChanged: (escolha) => setState(() => diaSemana = escolha as String),
+                        value: (widget.reuniao != null) ? widget.reuniao!.diaSemana : null,
                         decoration: const InputDecoration(
                           labelText: 'Dia da Semana',
                           labelStyle: TextStyle(fontSize: 17.5),
@@ -218,13 +218,11 @@ class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
     
     if(widget.reuniao == null) {
       _descricaoController.text = '';
-      _diaSemanaController.text = '';
       _horarioInicioController.text = '';
       _horarioTerminoController.text = '';
     } else {
       setState(() {
         _descricaoController.text = widget.reuniao!.descricao;
-        _diaSemanaController.text = widget.reuniao!.diaSemana;
         _horarioInicioController.text = widget.reuniao!.horarioInicio;
         _horarioTerminoController.text = widget.reuniao!.horarioTermino;
       });
@@ -273,7 +271,6 @@ class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
 
       // Limpeza do conteúdo de todos os TextFields para uma nova inserção após a confirmação
       _descricaoController.text = '';
-      _diaSemanaController.text = '';
       _horarioInicioController.text = '';
       _horarioTerminoController.text = '';
     }

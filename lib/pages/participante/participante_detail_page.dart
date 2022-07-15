@@ -30,31 +30,34 @@ final _dataNascimentoController = TextEditingController();
 
 final _formKey = GlobalKey<FormState>();
 
+// Instância do banco Cloud Firestore
+FirebaseFirestore db = FirebaseFirestore.instance;
+
+String? uf;
+final List<String> ufList = ['', 'AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES', 'GO',
+'MA', 'MG', 'MS', 'MT', 'PA','PB', 'PE', 'PI',  'PR', 'RJ', 'RN', 'RO', 'RR', 'RS',
+'SC', 'SE', 'SP', 'TO'];
+
+final contatoMask = MaskTextInputFormatter(
+  mask: '(##) # ####-####',
+  filter: {'#': RegExp(r'[0-9]')},
+  type: MaskAutoCompletionType.lazy,
+);
+
+final dataMask = MaskTextInputFormatter(
+  mask: '##/##/####',
+  filter: {'#': RegExp(r'[0-9]')},
+  type: MaskAutoCompletionType.lazy,
+);
+
+final ufMask = MaskTextInputFormatter(
+  mask: '##',
+  filter: {'#': RegExp(r'[A-z]')},
+  type: MaskAutoCompletionType.lazy,
+);
+
 
 class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
-
-  // Instância do banco Cloud Firestore
-  FirebaseFirestore db = FirebaseFirestore.instance;
-
-
-  final contatoMask = MaskTextInputFormatter(
-    mask: '(##) # ####-####',
-    filter: {'#': RegExp(r'[0-9]')},
-    type: MaskAutoCompletionType.lazy,
-  );
-
-  final dataMask = MaskTextInputFormatter(
-    mask: '##/##/####',
-    filter: {'#': RegExp(r'[0-9]')},
-    type: MaskAutoCompletionType.lazy,
-  );
-
-  final ufMask = MaskTextInputFormatter(
-    mask: '##',
-    filter: {'#': RegExp(r'[A-z]')},
-    type: MaskAutoCompletionType.lazy,
-  );
-
   @override
   void initState() {
     /* 
@@ -84,7 +87,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
                   child: Column(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
+                        padding: const EdgeInsets.only(top: 4, bottom: 16.0),
                         child: TextFormField(
                           controller: _nomeController,
                           decoration: const InputDecoration(
@@ -108,11 +111,6 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
                             labelStyle: TextStyle(fontSize: 17.5),
                             border: OutlineInputBorder(),
                           ),
-                          validator: (value) {
-                            if(value == null || value.isEmpty) {
-                              return 'Informe a Rua';
-                            }
-                          }
                         ),
                       ),
                       Padding(
@@ -124,11 +122,6 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
                             labelStyle: TextStyle(fontSize: 17.5),
                             border: OutlineInputBorder(),
                           ),
-                          validator: (value) {
-                            if(value == null || value.isEmpty) {
-                              return 'Informe o Bairro';
-                            }
-                          }
                         ),
                       ),
                       Padding(
@@ -140,28 +133,25 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
                             labelStyle: TextStyle(fontSize: 17.5),
                             border: OutlineInputBorder(),
                           ),
-                          validator: (value) {
-                            if(value == null || value.isEmpty) {
-                              return 'Informe a Cidade';
-                            }
-                          }
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(bottom: 16.0),
-                        child: TextFormField(
-                          controller: _ufController,
+                        child: DropdownButtonFormField(
+                          items: ufList
+                            .map((op) => DropdownMenuItem(
+                              value: op,
+                              child: Text(op),
+                              ),
+                            )
+                            .toList(),
+                          onChanged: (escolha) => setState(() => uf = escolha as String),
+                          value: (widget.participante != null) ? widget.participante!.uf : null,
                           decoration: const InputDecoration(
                             labelText: 'UF',
                             labelStyle: TextStyle(fontSize: 17.5),
                             border: OutlineInputBorder(),
                           ),
-                          inputFormatters: [ ufMask ],
-                          validator: (value) {
-                            if(value == null || value.isEmpty) {
-                              return 'Informe a Unidade Federal';
-                            }
-                          }
                         ),
                       ),
                       Padding(
@@ -192,11 +182,6 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
                             labelStyle: TextStyle(fontSize: 17.5),
                             border: OutlineInputBorder(),
                           ),
-                          validator: (value) {
-                            if(value == null || value.isEmpty) {
-                              return 'Informe a Profissão';
-                            }
-                          }
                         ),
                       ),
                       Padding(
@@ -208,11 +193,6 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
                             labelStyle: TextStyle(fontSize: 17.5),
                             border: OutlineInputBorder(),
                           ),
-                          validator: (value) {
-                            if(value == null || value.isEmpty) {
-                              return 'Informe o Local de Trabalho';
-                            }
-                          }
                         ),
                       ),
                       Padding(
@@ -227,11 +207,6 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
                             border: OutlineInputBorder(),
                           ),
                           inputFormatters: [ dataMask ],
-                          validator: (value) {
-                            if(value == null || value.isEmpty) {
-                              return 'Informe a Data de Nascimento';
-                            }
-                          }
                         ),
                       ),
                     ],
@@ -288,7 +263,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
       _ruaController.text = '';
       _bairroController.text = '';
       _cidadeController.text = '';
-      _ufController.text = '';
+      uf = '';
       _contatoController.text = '';
       _profissaoController.text = '';
       _localTrabalhoController.text = '';
@@ -299,7 +274,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
         _ruaController.text = widget.participante!.rua;
         _bairroController.text = widget.participante!.bairro;
         _cidadeController.text = widget.participante!.cidade;
-        _ufController.text = widget.participante!.uf;
+        uf = widget.participante!.uf;
         _contatoController.text = widget.participante!.contato;
         _profissaoController.text = widget.participante!.profissao;
         _localTrabalhoController.text = widget.participante!.localTrabalho;
@@ -317,7 +292,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
         'rua': _ruaController.text,
         'bairro': _bairroController.text,
         'cidade': _cidadeController.text,
-        'uf': _ufController.text,
+        'uf': uf,
         'contato': _contatoController.text,
         'profissao': _profissaoController.text,
         'localTrabalho': _localTrabalhoController.text,
@@ -344,7 +319,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
         'rua': _ruaController.text,
         'bairro': _bairroController.text,
         'cidade': _cidadeController.text,
-        'uf': _ufController.text,
+        'uf': uf,
         'contato': _contatoController.text,
         'profissao': _profissaoController.text,
         'localTrabalho': _localTrabalhoController.text,
@@ -363,7 +338,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
       _ruaController.text = '';
       _bairroController.text = '';
       _cidadeController.text = '';
-      _ufController.text = '';
+      uf = '';
       _contatoController.text = '';
       _profissaoController.text = '';
       _localTrabalhoController.text = '';
