@@ -2,6 +2,7 @@ class Participante {
   // Construtor nomeado
   Participante({
     required this.id,
+    required this.tipoParticipante,
     required this.nome,
     this.apelido,
     required this.rua,
@@ -16,6 +17,7 @@ class Participante {
   
   // Atributos
   String id;
+  String tipoParticipante;
   String nome;
   String? apelido;
   String rua;
@@ -30,6 +32,7 @@ class Participante {
   // Conversão do JSON para o Objeto
   Participante.fromJason(Map<String, dynamic> json) :
     id = json['id'] as String,
+    tipoParticipante = json['tipoParticipante'],
     nome = json['nome'] as String,
     rua = json['rua'] as String,
     bairro = json['bairro'] as String,
@@ -44,6 +47,7 @@ class Participante {
   Map<String, dynamic> toJson() {
     return {
       'id' : id,
+      'tipoParticipante': tipoParticipante,
       'nome' : nome,
       'rua' : rua,
       'bairro' : bairro,

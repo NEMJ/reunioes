@@ -30,6 +30,7 @@ class _ParticipantesListPageState extends State<ParticipantesListPage> {
         query.docs.forEach((doc) {
           var participante = Participante(
             id: doc.get('id'),
+            tipoParticipante: doc.get('tipoParticipante'),
             nome: doc.get('nome'),
             rua: doc.get('rua'),
             bairro: doc.get('bairro'),
@@ -142,6 +143,7 @@ class _ParticipantesListPageState extends State<ParticipantesListPage> {
     query.docs.forEach((doc) {
       Participante participante = Participante(
         id: doc.get("id"),
+        tipoParticipante: doc.get("tipoParticipante"),
         nome: doc.get('nome'),
         rua: doc.get('rua'),
         bairro: doc.get('bairro'),

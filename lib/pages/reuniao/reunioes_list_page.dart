@@ -56,7 +56,7 @@ class ReunioesListPageState extends State<ReunioesListPage> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Cadastro de Reuniões"),
+          title: const Text("Lista de Reuniões"),
         ),
         body: Container(
           padding: const EdgeInsets.all(16.0),

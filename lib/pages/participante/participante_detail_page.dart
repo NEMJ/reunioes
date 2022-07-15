@@ -22,7 +22,6 @@ final _nomeController = TextEditingController();
 final _ruaController = TextEditingController();
 final _bairroController = TextEditingController();
 final _cidadeController = TextEditingController();
-final _ufController = TextEditingController();
 final _contatoController = TextEditingController();
 final _profissaoController = TextEditingController();
 final _localTrabalhoController = TextEditingController();
@@ -33,29 +32,29 @@ final _formKey = GlobalKey<FormState>();
 // Instância do banco Cloud Firestore
 FirebaseFirestore db = FirebaseFirestore.instance;
 
+// Bloco responsável pela parte de opções para Unidade Federal
 String? uf;
-final List<String> ufList = ['', 'AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES', 'GO',
+final List<String> ufList = ['Não informado', 'AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES', 'GO',
 'MA', 'MG', 'MS', 'MT', 'PA','PB', 'PE', 'PI',  'PR', 'RJ', 'RN', 'RO', 'RR', 'RS',
 'SC', 'SE', 'SP', 'TO'];
 
+// Bloco responsável pela definição do tipo de inserção de cadastro
+String? tipoParticipante;
+final List<String> tiposParticipante = ['Dirigente', 'Entidade', 'Participante'];
+
+// Máscara para o campo de celular
 final contatoMask = MaskTextInputFormatter(
   mask: '(##) # ####-####',
   filter: {'#': RegExp(r'[0-9]')},
   type: MaskAutoCompletionType.lazy,
 );
 
+// Máscara para o campo de Data
 final dataMask = MaskTextInputFormatter(
   mask: '##/##/####',
   filter: {'#': RegExp(r'[0-9]')},
   type: MaskAutoCompletionType.lazy,
 );
-
-final ufMask = MaskTextInputFormatter(
-  mask: '##',
-  filter: {'#': RegExp(r'[A-z]')},
-  type: MaskAutoCompletionType.lazy,
-);
-
 
 class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
   @override
@@ -73,7 +72,10 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cadastro de Pessoas Page'),
+        // Caso já exista o registro ele traz o nome do participante; se não, o título da página
+        title: (widget.participante != null) 
+          ? Text(widget.participante!.nome)
+          : const Text('Cadastro de Participantes'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -87,7 +89,35 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
                   child: Column(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(top: 4, bottom: 16.0),
+                        padding: const EdgeInsets.only(top: 5, bottom: 16.0),
+                        // Widget que exibe algumas opções pré-estabelecidas para seleção
+                        child: DropdownButtonFormField(
+                          // Aqui é feito um Item do tipo que se espera através da lista por meio de um map
+                          items: tiposParticipante
+                            .map((op) => DropdownMenuItem(
+                              value: op,
+                              child: Text(op),
+                              ),
+                            )
+                            .toList(), // É esperado sempre uma lista
+                          // A variável recebe a opção selecionada para controle e inserção
+                          onChanged: (escolha) => setState(() => tipoParticipante = escolha as String),
+                          // Caso seja passado um participante para a tela, é mostrada a opção já cadastrada; se não, é mostrado apenas o título do campo
+                          value: (widget.participante != null) ? widget.participante!.tipoParticipante : null,
+                          decoration: const InputDecoration(
+                            labelText: 'Tipo de Participante',
+                            labelStyle: TextStyle(fontSize: 17.5),
+                            border: OutlineInputBorder(),
+                          ),
+                          validator: (value) {
+                            if(value == null) {
+                              return 'Selecione uma opção';
+                            }
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
                         child: TextFormField(
                           controller: _nomeController,
                           decoration: const InputDecoration(
@@ -152,6 +182,11 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
                             labelStyle: TextStyle(fontSize: 17.5),
                             border: OutlineInputBorder(),
                           ),
+                          validator: (value) {
+                            if(value == null) {
+                              return 'Selecione uma opção';
+                            }
+                          },
                         ),
                       ),
                       Padding(
@@ -259,6 +294,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
      */
 
     if(widget.participante == null) {
+      tipoParticipante = '';
       _nomeController.text = '';
       _ruaController.text = '';
       _bairroController.text = '';
@@ -270,6 +306,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
       _dataNascimentoController.text = '';
     } else {
       setState(() {
+        tipoParticipante = widget.participante!.tipoParticipante;
         _nomeController.text = widget.participante!.nome;
         _ruaController.text = widget.participante!.rua;
         _bairroController.text = widget.participante!.bairro;
@@ -288,6 +325,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
     if(_formKey.currentState!.validate()) { 
       // Atualização de todos os campos no registro passado à esta página por parâmetro
       db.collection('participantes').doc(id).update({
+        'tipoParticipante': tipoParticipante,
         'nome': _nomeController.text,
         'rua': _ruaController.text,
         'bairro': _bairroController.text,
@@ -315,6 +353,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
       // Envio de um novo registro para o banco na coleção 'reunioes'
       db.collection('participantes').doc(id).set({
         'id': id,
+        'tipoParticipante': tipoParticipante,
         'nome': _nomeController.text,
         'rua': _ruaController.text,
         'bairro': _bairroController.text,
@@ -334,6 +373,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
       );
 
       // Limpeza do conteúdo de todos os TextFields para uma nova inserção
+      tipoParticipante = '';
       _nomeController.text = '';
       _ruaController.text = '';
       _bairroController.text = '';

@@ -63,7 +63,9 @@ class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Reunião Detail Page"),
+        title: (widget.reuniao != null)
+          ? Text(widget.reuniao!.descricao)
+          : const Text("Cadastro de Reuniões"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
