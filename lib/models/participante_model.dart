@@ -10,6 +10,7 @@ class Participante {
     required this.cidade,
     required this. uf,
     required this.contato,
+    required this.telFixo,
     required this. profissao,
     required this. localTrabalho,
     required this.dataNascimento,
@@ -25,6 +26,7 @@ class Participante {
   String cidade;
   String uf;
   String contato;
+  String telFixo;
   String profissao;
   String localTrabalho;
   String dataNascimento;
@@ -39,6 +41,7 @@ class Participante {
     cidade = json['cidade'] as String,
     uf = json['uf'] as String,
     contato = json['contato'] as String,
+    telFixo = json['telFixo'] as String,
     profissao = json['profissao'] as String,
     localTrabalho = json['localTrabalho'] as String,
     dataNascimento = json['dataNascimento'] as String;
@@ -54,6 +57,7 @@ class Participante {
       'cidade' : cidade,
       'uf' : uf,
       'contato' : contato,
+      'telFixo': telFixo,
       'profissao' : profissao,
       'localTrabalho' : localTrabalho,
       'dataNascimento' : dataNascimento

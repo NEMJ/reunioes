@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:reunioes/pages/dropdown_list_page.dart';
 import 'package:reunioes/pages/participante/participantes_list_page.dart';
 import './reuniao/reunioes_list_page.dart';
 
@@ -30,7 +31,7 @@ class _HomePageState extends State<HomePage> {
                     Navigator.push(
                       context,
                       PageTransition(
-                        child: const ParticipantesListPage(),
+                        child: DropdownListPage(),
                         type: PageTransitionType.leftToRight,
                         // alignment: Alignment.center,
                         // duration: const Duration(milliseconds: 600),

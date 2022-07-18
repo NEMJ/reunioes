@@ -23,6 +23,7 @@ final _ruaController = TextEditingController();
 final _bairroController = TextEditingController();
 final _cidadeController = TextEditingController();
 final _contatoController = TextEditingController();
+final _telFixoController = TextEditingController();
 final _profissaoController = TextEditingController();
 final _localTrabalhoController = TextEditingController();
 final _dataNascimentoController = TextEditingController();
@@ -209,6 +210,19 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
                         ),
                       ),
                       Padding(
+                        padding: EdgeInsets.only(bottom: 16.0),
+                        child: TextFormField(
+                          controller: _telFixoController,
+                          decoration: const InputDecoration(
+                            labelText: 'Telefone Fixo',
+                            hintText: 'Ex: 16 3727-0000',
+                            labelStyle: TextStyle(fontSize: 17.5),
+                            border: OutlineInputBorder(),
+                          ),
+                          keyboardType: TextInputType.number,
+                        ),
+                      ),
+                      Padding(
                         padding: const EdgeInsets.only(bottom: 16.0),
                         child: TextFormField(
                           controller: _profissaoController,
@@ -301,6 +315,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
       _cidadeController.text = '';
       uf = '';
       _contatoController.text = '';
+      _telFixoController.text = '';
       _profissaoController.text = '';
       _localTrabalhoController.text = '';
       _dataNascimentoController.text = '';
@@ -313,6 +328,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
         _cidadeController.text = widget.participante!.cidade;
         uf = widget.participante!.uf;
         _contatoController.text = widget.participante!.contato;
+        _telFixoController.text = widget.participante!.telFixo;
         _profissaoController.text = widget.participante!.profissao;
         _localTrabalhoController.text = widget.participante!.localTrabalho;
         _dataNascimentoController.text = widget.participante!.dataNascimento;
@@ -332,6 +348,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
         'cidade': _cidadeController.text,
         'uf': uf,
         'contato': _contatoController.text,
+        'telFixo': _telFixoController.text,
         'profissao': _profissaoController.text,
         'localTrabalho': _localTrabalhoController.text,
         'dataNascimento': _dataNascimentoController.text,
@@ -360,6 +377,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
         'cidade': _cidadeController.text,
         'uf': uf,
         'contato': _contatoController.text,
+        'telFixo': _telFixoController.text,
         'profissao': _profissaoController.text,
         'localTrabalho': _localTrabalhoController.text,
         'dataNascimento': _dataNascimentoController.text,
@@ -380,6 +398,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
       _cidadeController.text = '';
       uf = '';
       _contatoController.text = '';
+      _telFixoController.text = '';
       _profissaoController.text = '';
       _localTrabalhoController.text = '';
       _dataNascimentoController.text = '';
