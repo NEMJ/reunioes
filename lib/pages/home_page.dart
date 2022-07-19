@@ -31,7 +31,7 @@ class _HomePageState extends State<HomePage> {
                     Navigator.push(
                       context,
                       PageTransition(
-                        child: DropdownListPage(),
+                        child: ParticipantesListPage(),
                         type: PageTransitionType.leftToRight,
                         // alignment: Alignment.center,
                         // duration: const Duration(milliseconds: 600),

@@ -18,9 +18,7 @@ String? diaSemana;
 final List<String> diasSemana = [];
 
 String participante = '';
-List<String> entidadesPart = [];
-
-List<Map<String, dynamic>> et = [];
+List<String> et = [];
 
 class _DropdownListPageState extends State<DropdownListPage> {
   @override
@@ -32,8 +30,7 @@ class _DropdownListPageState extends State<DropdownListPage> {
       } else {
         query.docs.forEach((doc) {
           if(doc.get('tipoParticipante') == 'Entidade') {
-            var nmp = {"id": doc.get('id'), "nome": doc.get('nome')};
-            et.add(nmp);
+            et.add(doc.get('nome'));
           }
         });
         setState(() => et);
@@ -61,8 +58,8 @@ class _DropdownListPageState extends State<DropdownListPage> {
                   items: et
                     .map((op) {
                       return DropdownMenuItem(
-                        value: op['id'],
-                        child: Text(op['nome']),
+                        value: op,
+                        child: Text(op),
                       );
                     })
                     .toList(),

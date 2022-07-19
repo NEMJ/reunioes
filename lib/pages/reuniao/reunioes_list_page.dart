@@ -31,6 +31,7 @@ class ReunioesListPageState extends State<ReunioesListPage> {
           var reuniao = Reuniao(
             id: doc.get('id'),
             descricao: doc.get('descricao'),
+            entidade: doc.get('entidade'),
             diaSemana: doc.get('diaSemana'),
             horarioInicio: doc.get("horarioInicio"),
             horarioTermino: doc.get("horarioTermino"),
@@ -138,6 +139,7 @@ class ReunioesListPageState extends State<ReunioesListPage> {
       Reuniao reuniao = Reuniao(
         id: doc.get("id"),
         descricao: doc.get("descricao"),
+        entidade: doc.get("entidade"),
         diaSemana: doc.get("diaSemana"),
         horarioInicio: doc.get("horarioInicio"),
         horarioTermino: doc.get("horarioTermino"),

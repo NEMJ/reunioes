@@ -29,7 +29,7 @@ FirebaseFirestore db = FirebaseFirestore.instance;
 // GlobalKey para a validação do formulário de cadastro de reuniões
 final _formKey = GlobalKey<FormState>();
 
-String? diaSemana;
+String? diaSemana = '';
 final List<String> diasSemana = [
   'Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'
 ];
@@ -46,6 +46,8 @@ final horario = MaskTextInputFormatter(
   type: MaskAutoCompletionType.eager,
 );
 
+String? entidade = '';
+List<String> et = [];
 
 class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
   @override
@@ -56,6 +58,23 @@ class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
      * - Se for alteração, aparecem as informações da reunião selecionada
     */
     initControllers();
+    diaSemana = (widget.reuniao != null) ? widget.reuniao!.diaSemana : null;
+    entidade = (widget.reuniao != null) ? widget.reuniao!.entidade : null;
+
+    db.collection('participantes').snapshots().listen((query) {
+      et = [];
+      if(query.docs.isEmpty) {
+        setState((){});
+      } else {
+        query.docs.forEach((doc) {
+          if(doc.get('tipoParticipante') == 'Entidade') {
+            et.add(doc.get('nome'));
+          }
+        });
+        setState(() => et);
+      }
+    });
+
     super.initState();
   }
 
@@ -103,6 +122,33 @@ class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 16.0),
                       child: DropdownButtonFormField(
+                        items: et
+                          .map((op) {
+                            return DropdownMenuItem(
+                              value: op,
+                              child: Text(op),
+                            );
+                          })
+                          .toList(),
+                        onChanged: (escolha) => setState(() => entidade = escolha.toString()),
+                        value: entidade,
+                        decoration: const InputDecoration(
+                          labelText: 'Entidade',
+                          labelStyle: TextStyle(fontSize: 17.5),
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: (value) {
+                          if(value == null) {
+                            return 'Selecione uma entidade';
+                          } else {
+                            return null;
+                          }
+                        }
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 16.0),
+                      child: DropdownButtonFormField(
                         items: diasSemana
                           .map((op) => DropdownMenuItem(
                               value: op,
@@ -110,8 +156,8 @@ class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
                             ),
                           )
                           .toList(),
-                        onChanged: (escolha) => setState(() => diaSemana = escolha as String),
-                        value: (widget.reuniao != null) ? widget.reuniao!.diaSemana : null,
+                        onChanged: (escolha) => setState(() => diaSemana = escolha.toString()),
+                        value: diaSemana,
                         decoration: const InputDecoration(
                           labelText: 'Dia da Semana',
                           labelStyle: TextStyle(fontSize: 17.5),
@@ -237,6 +283,7 @@ class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
       // Atualização de todos os campos no registro passado à esta página por parâmetro
       db.collection('reunioes').doc(id).update({
         'descricao': _descricaoController.text,
+        'entidade': entidade,
         'diaSemana': diaSemana,
         'horarioInicio': _horarioInicioController.text,
         'horarioTermino': _horarioTerminoController.text
@@ -259,6 +306,7 @@ class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
       db.collection('reunioes').doc(id).set({
         "id": id,
         "descricao": _descricaoController.text,
+        "entidade": entidade,
         "diaSemana": diaSemana,
         "horarioInicio": _horarioInicioController.text,
         "horarioTermino": _horarioTerminoController.text
@@ -272,6 +320,10 @@ class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
       );
 
       // Limpeza do conteúdo de todos os TextFields para uma nova inserção após a confirmação
+      setState(() {
+        diaSemana = null;
+        entidade = null;  
+      });
       _descricaoController.text = '';
       _horarioInicioController.text = '';
       _horarioTerminoController.text = '';
