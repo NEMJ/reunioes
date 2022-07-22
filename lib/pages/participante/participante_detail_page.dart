@@ -50,7 +50,7 @@ final List<String> tiposParticipante = ['Dirigente', 'Entidade', 'Participante']
 
 // Lista responsável por armazenar as reuniões que cada participante pode fazer parte
 List<CheckboxModel> reunioes = [];
-
+List<CheckboxModel> reunioesMarcadas = []; 
 
 // Máscara para o campo de celular
 final contatoMask = MaskTextInputFormatter(
@@ -166,6 +166,38 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 16.0),
                         child: TextFormField(
+                          controller: _contatoController,
+                          decoration: const InputDecoration(
+                            labelText: 'Celular',
+                            hintText: 'Ex: (16) 9 9999-9999',
+                            labelStyle: TextStyle(fontSize: 17.5),
+                            border: OutlineInputBorder(),
+                          ),
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [ contatoMask ],
+                          validator: (value) {
+                            if(value == null || value.isEmpty) {
+                              return 'Informe um número para contato';
+                            }
+                          }
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 16.0),
+                        child: TextFormField(
+                          controller: _telFixoController,
+                          decoration: const InputDecoration(
+                            labelText: 'Telefone Fixo',
+                            hintText: 'Ex: 16 3727-0000',
+                            labelStyle: TextStyle(fontSize: 17.5),
+                            border: OutlineInputBorder(),
+                          ),
+                          keyboardType: TextInputType.number,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: TextFormField(
                           controller: _ruaController,
                           decoration: const InputDecoration(
                             labelText: 'Rua',
@@ -218,38 +250,6 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
                               return 'Selecione uma opção';
                             }
                           },
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
-                        child: TextFormField(
-                          controller: _contatoController,
-                          decoration: const InputDecoration(
-                            labelText: 'Contato',
-                            hintText: 'Ex: (16) 9 9999-9999',
-                            labelStyle: TextStyle(fontSize: 17.5),
-                            border: OutlineInputBorder(),
-                          ),
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [ contatoMask ],
-                          validator: (value) {
-                            if(value == null || value.isEmpty) {
-                              return 'Informe um número para contato';
-                            }
-                          }
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(bottom: 16.0),
-                        child: TextFormField(
-                          controller: _telFixoController,
-                          decoration: const InputDecoration(
-                            labelText: 'Telefone Fixo',
-                            hintText: 'Ex: 16 3727-0000',
-                            labelStyle: TextStyle(fontSize: 17.5),
-                            border: OutlineInputBorder(),
-                          ),
-                          keyboardType: TextInputType.number,
                         ),
                       ),
                       Padding(
@@ -346,7 +346,6 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
                                 onPressed: () {
                                   update(widget.participante!.id);
                                   Navigator.of(context).pop();
-                                  listarSelecionados();
                                 },
                                 child: const Text("Atualizar")
                               )
@@ -408,7 +407,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
       // Atualização de todos os campos no registro passado à esta página por parâmetro
       db.collection('participantes').doc(id).update({
         'tipoParticipante': tipoParticipante,
-        'reunioes': reunioes.map((reuniao) => reuniao.toMap()).toList(),
+        'reunioes': reunioesMarcadas.map((reuniao) => reuniao.toMap()).toList(),
         'nome': _nomeController.text,
         'rua': _ruaController.text,
         'bairro': _bairroController.text,
@@ -438,7 +437,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
       db.collection('participantes').doc(id).set({
         'id': id,
         'tipoParticipante': tipoParticipante,
-        'reunioes': reunioes.map((reuniao) => reuniao.toMap()).toList(),
+        'reunioes': reunioesMarcadas.map((reuniao) => reuniao.toMap()).toList(),
         'nome': _nomeController.text,
         'rua': _ruaController.text,
         'bairro': _bairroController.text,
@@ -477,20 +476,14 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
   // A ideia aqui seria adicionar apenas as reunioes marcadas para economizar tempo e recusos
   // Mas até o momento são adicionadas todas as reuniões selecionadas e sem a possibilidade de recuperar esses dados do banco
   List<CheckboxModel> listarSelecionados() {
-    List<CheckboxModel> itensMarcados = List.from(reunioes.where((reuniao) => reuniao.checked));
+    // List<CheckboxModel> itensMarcados = List.from(reunioes.where((reuniao) => reuniao.checked));
 
-    List<CheckboxModel> itensUteis = []; 
-    
     reunioes.forEach((reuniao) {
       if(reuniao.checked) {
-        itensUteis.add(reuniao);
+        reunioesMarcadas.add(reuniao);
       }
     });
 
-    itensUteis.forEach((reuniao) {
-      print('Reunião Marcada: ${reuniao.texto}');
-    });
-
-    return itensUteis;
+    return reunioesMarcadas;
   }
 }
