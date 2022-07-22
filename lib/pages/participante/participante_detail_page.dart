@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:reunioes/models/participante_model.dart';
+import 'package:reunioes/pages/widgets/checkbox_widget.dart';
 import 'package:uuid/uuid.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
@@ -30,8 +31,10 @@ final _dataNascimentoController = TextEditingController();
 
 final _formKey = GlobalKey<FormState>();
 
+
 // Instância do banco Cloud Firestore
 FirebaseFirestore db = FirebaseFirestore.instance;
+
 
 // Bloco responsável pela parte de opções para Unidade Federal
 String? uf;
@@ -39,9 +42,15 @@ final List<String> ufList = ['Não informado', 'AC', 'AL', 'AM', 'AP', 'BA', 'CE
 'MA', 'MG', 'MS', 'MT', 'PA','PB', 'PE', 'PI',  'PR', 'RJ', 'RN', 'RO', 'RR', 'RS',
 'SC', 'SE', 'SP', 'TO'];
 
+
 // Bloco responsável pela definição do tipo de inserção de cadastro
 String? tipoParticipante;
 final List<String> tiposParticipante = ['Dirigente', 'Entidade', 'Participante'];
+
+
+// Lista responsável por armazenar as reuniões que cada participante pode fazer parte
+List<CheckboxModel> reunioes = [];
+
 
 // Máscara para o campo de celular
 final contatoMask = MaskTextInputFormatter(
@@ -57,9 +66,30 @@ final dataMask = MaskTextInputFormatter(
   type: MaskAutoCompletionType.lazy,
 );
 
+
+
 class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
   @override
   void initState() {
+
+    db.collection('reunioes').snapshots().listen((query) {
+      reunioes = [];
+      if(query.docs.isEmpty) {
+        setState((){});
+      } else {
+        query.docs.forEach((doc) {
+            reunioes.add(
+              CheckboxModel(
+                texto: doc.get('descricao'),
+                id: doc.get('id'),
+              ),
+            );
+        });
+        setState(() => reunioes);
+      }
+    });
+
+
     /* 
      * Cada campo de texto é iniciado de acordo com a situação no 'initControllers()'
      * - Se for inserção de um novo registro, é vazio;
@@ -262,35 +292,71 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
                   ),
                 ),
               ),
-              ElevatedButton(
-                // Se não for recebido um objeto do tipo 'Reunião' o botão assume o primeiro texto, se não, o segundo
-                child: (widget.participante != null)
-                  ? const Text("Salvar Alterações")
-                  : const Text("Confirmar Cadastro"),
-                onPressed: () {
-                  // Se foi passado o objeto para a página, abre-se um dialog a respeito do update
-                  (widget.participante != null)
-                    ? showDialog(
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  // Alert que lista as reuniões cadastradas para vincular ao participante
+                  TextButton(
+                    child: const Text('Selecione uma reunião'),
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.purple[100],
+                    ),
+                    onPressed: () => showDialog(
                       context: context,
                       builder: (_) => AlertDialog(
-                        title: Text("Atualizar dados da reunião ${widget.participante!.nome}?"),
+                        title: const Text('Selecione uma reunião'),
+                        scrollable: true,
+                        content: Column(
+                          children: [
+                            for(CheckboxModel reuniao in reunioes)
+                              CheckboxWidget(item: reuniao)
+                          ],
+                        ),
                         actions: [
                           ElevatedButton(
-                            onPressed: () => Navigator.of(context).pop(),
-                            child: const Text("Cancelar")
-                          ),
-                          ElevatedButton(
+                            child: const Text('Confirmar'),
                             onPressed: () {
-                              update(widget.participante!.id);
                               Navigator.of(context).pop();
+                              listarSelecionados();
                             },
-                            child: const Text("Atualizar")
-                          )
+                          ),
                         ],
                       ),
-                    )
-                    : sendData();
-                },
+                    ),
+                  ),
+                  // Botão para cadastrar novo participante ou salvar as alterações no participante selecionado
+                  ElevatedButton(
+                    // Se não for recebido um objeto do tipo 'Reunião' o botão assume o primeiro texto, se não, o segundo
+                    child: (widget.participante != null)
+                      ? const Text("Salvar Alterações")
+                      : const Text("Confirmar Cadastro"),
+                    onPressed: () {
+                      // Se foi passado o objeto para a página, abre-se um dialog a respeito do update
+                      (widget.participante != null)
+                        ? showDialog(
+                          context: context,
+                          builder: (_) => AlertDialog(
+                            title: Text("Atualizar dados da reunião ${widget.participante!.nome}?"),
+                            actions: [
+                              ElevatedButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                child: const Text("Cancelar")
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  update(widget.participante!.id);
+                                  Navigator.of(context).pop();
+                                  listarSelecionados();
+                                },
+                                child: const Text("Atualizar")
+                              )
+                            ],
+                          ),
+                        )
+                        : sendData();
+                    },
+                  ),
+                ],
               ),
             ],
           ),
@@ -342,6 +408,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
       // Atualização de todos os campos no registro passado à esta página por parâmetro
       db.collection('participantes').doc(id).update({
         'tipoParticipante': tipoParticipante,
+        'reunioes': reunioes.map((reuniao) => reuniao.toMap()).toList(),
         'nome': _nomeController.text,
         'rua': _ruaController.text,
         'bairro': _bairroController.text,
@@ -371,6 +438,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
       db.collection('participantes').doc(id).set({
         'id': id,
         'tipoParticipante': tipoParticipante,
+        'reunioes': reunioes.map((reuniao) => reuniao.toMap()).toList(),
         'nome': _nomeController.text,
         'rua': _ruaController.text,
         'bairro': _bairroController.text,
@@ -403,5 +471,26 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
       _localTrabalhoController.text = '';
       _dataNascimentoController.text = '';
     }
+  }
+
+
+  // A ideia aqui seria adicionar apenas as reunioes marcadas para economizar tempo e recusos
+  // Mas até o momento são adicionadas todas as reuniões selecionadas e sem a possibilidade de recuperar esses dados do banco
+  List<CheckboxModel> listarSelecionados() {
+    List<CheckboxModel> itensMarcados = List.from(reunioes.where((reuniao) => reuniao.checked));
+
+    List<CheckboxModel> itensUteis = []; 
+    
+    reunioes.forEach((reuniao) {
+      if(reuniao.checked) {
+        itensUteis.add(reuniao);
+      }
+    });
+
+    itensUteis.forEach((reuniao) {
+      print('Reunião Marcada: ${reuniao.texto}');
+    });
+
+    return itensUteis;
   }
 }

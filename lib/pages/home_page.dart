@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:reunioes/pages/dropdown_list_page.dart';
+import 'package:reunioes/lab/dropdown_list_page.dart';
 import 'package:reunioes/pages/participante/participantes_list_page.dart';
+import 'package:reunioes/lab/alert_checkbox_page.dart';
 import './reuniao/reunioes_list_page.dart';
 
 class HomePage extends StatefulWidget {

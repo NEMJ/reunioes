@@ -31,6 +31,7 @@ class _ParticipantesListPageState extends State<ParticipantesListPage> {
           var participante = Participante(
             id: doc.get('id'),
             tipoParticipante: doc.get('tipoParticipante'),
+            reunioes: doc.get('reunioes'),
             nome: doc.get('nome'),
             rua: doc.get('rua'),
             bairro: doc.get('bairro'),
@@ -145,6 +146,7 @@ class _ParticipantesListPageState extends State<ParticipantesListPage> {
       Participante participante = Participante(
         id: doc.get("id"),
         tipoParticipante: doc.get("tipoParticipante"),
+        reunioes: doc.get('reunioes'),
         nome: doc.get('nome'),
         rua: doc.get('rua'),
         bairro: doc.get('bairro'),
