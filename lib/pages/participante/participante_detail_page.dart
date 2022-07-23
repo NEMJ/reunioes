@@ -38,7 +38,7 @@ FirebaseFirestore db = FirebaseFirestore.instance;
 
 // Bloco responsável pela parte de opções para Unidade Federal
 String? uf;
-final List<String> ufList = ['Não informado', 'AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES', 'GO',
+final List<String> ufList = ['', 'AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES', 'GO',
 'MA', 'MG', 'MS', 'MT', 'PA','PB', 'PE', 'PI',  'PR', 'RJ', 'RN', 'RO', 'RR', 'RS',
 'SC', 'SE', 'SP', 'TO'];
 
@@ -71,6 +71,10 @@ final dataMask = MaskTextInputFormatter(
 class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
   @override
   void initState() {
+    List<String> aux = [];
+    if(widget.participante != null) {
+      widget.participante!.reunioes.forEach((reuniao) => aux.add(reuniao['id']));
+    }
 
     db.collection('reunioes').snapshots().listen((query) {
       reunioes = [];
@@ -82,9 +86,16 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
               CheckboxModel(
                 texto: doc.get('descricao'),
                 id: doc.get('id'),
+                // checked: (widget.participante != null) ? doc.get('checked') : false,
               ),
             );
         });
+
+        for(var i = 0; i < reunioes.length; i++) {
+          if(aux.contains(reunioes[i].id)) {
+            reunioes[i].checked = true;
+          }
+        }
         setState(() => reunioes);
       }
     });
@@ -245,11 +256,6 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
                             labelStyle: TextStyle(fontSize: 17.5),
                             border: OutlineInputBorder(),
                           ),
-                          validator: (value) {
-                            if(value == null) {
-                              return 'Selecione uma opção';
-                            }
-                          },
                         ),
                       ),
                       Padding(
@@ -425,6 +431,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
         ),
       ));
     }
+    reunioesMarcadas.forEach((e) => print(e.texto));
   }
 
   // Envio de dados para o banco e tratamento interno dos TextFields
@@ -477,7 +484,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
   // Mas até o momento são adicionadas todas as reuniões selecionadas e sem a possibilidade de recuperar esses dados do banco
   List<CheckboxModel> listarSelecionados() {
     // List<CheckboxModel> itensMarcados = List.from(reunioes.where((reuniao) => reuniao.checked));
-
+    reunioesMarcadas = [];
     reunioes.forEach((reuniao) {
       if(reuniao.checked) {
         reunioesMarcadas.add(reuniao);
