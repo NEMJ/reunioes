@@ -12,9 +12,12 @@ class ReunioesListPage extends StatefulWidget {
 
 class ReunioesListPageState extends State<ReunioesListPage> {
 
+  TextEditingController _searchController = TextEditingController();
+
   // Instancia do banco Cloud Firestore
   FirebaseFirestore db = FirebaseFirestore.instance;
   List<Reuniao> reunioesList = [];
+  List<Reuniao> reunioesListOnSearch = [];
 
   @override
   void initState() {
@@ -22,7 +25,7 @@ class ReunioesListPageState extends State<ReunioesListPage> {
     initFirestore();
 
     // Atualização em Tempo Real
-    db.collection('reunioes').snapshots().listen((query) {
+    db.collection('reunioes').orderBy("descricao").snapshots().listen((query) {
       reunioesList = [];
       if(query.docs.isEmpty) {
         setState(() {});
@@ -52,6 +55,7 @@ class ReunioesListPageState extends State<ReunioesListPage> {
     super.dispose();
   }
 
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -62,12 +66,66 @@ class ReunioesListPageState extends State<ReunioesListPage> {
         body: Container(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Flexible(
+              // Widget de campo de pesquisa
+              Container(
+                margin: EdgeInsets.only(bottom: 7),
+                decoration: BoxDecoration(
+                  color: Colors.purple.shade100,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: TextField(
+                  onChanged: (value) {
+                    setState(() {
+                      // Insere elementos na lista de filtragem conforme satisfeita a condição de pesquisa
+                      reunioesListOnSearch = reunioesList
+                        .where((element) => element.descricao.toLowerCase().contains(value.toLowerCase())).toList();
+                    });
+                  },
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    errorBorder: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    contentPadding: EdgeInsets.all(15),
+                    hintText: 'Pesquisar',
+                    prefixIcon: Icon(Icons.search),
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.close),
+                      onPressed: () {
+                        reunioesListOnSearch.clear();
+                        setState(() {
+                          _searchController.text = '';
+                        });
+                      },
+                    ),
+                  ),
+                ),
+              ),
+              _searchController.text.isNotEmpty && reunioesListOnSearch.isEmpty 
+              ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Icon(Icons.search_off, size: 100, color: Colors.purple),
+                    Text(
+                      'Sem resultados',
+                      style: TextStyle(
+                        fontSize: 35,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+              : Flexible(
                 child: ListView.builder(
                   shrinkWrap: true,
-                  itemCount: reunioesList.length,
+                  itemCount: _searchController.text.isNotEmpty
+                    ? reunioesListOnSearch.length
+                    : reunioesList.length,
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 8.0),
@@ -79,9 +137,17 @@ class ReunioesListPageState extends State<ReunioesListPage> {
                         leading: const CircleAvatar(
                           child: Icon(Icons.business_rounded),
                         ),
-                        title: Text(reunioesList[index].descricao),
+                        title: Text(
+                          _searchController.text.isNotEmpty
+                          ? reunioesListOnSearch[index].descricao
+                          : reunioesList[index].descricao
+                        ),
                         onTap: () {
-                          detailReuniao(reunioesList[index]);
+                          detailReuniao(
+                            _searchController.text.isNotEmpty
+                            ? reunioesListOnSearch[index]
+                            : reunioesList[index]
+                          );
                         },
                         trailing: IconButton(
                           icon: const Icon(Icons.cancel),
@@ -89,7 +155,11 @@ class ReunioesListPageState extends State<ReunioesListPage> {
                           onPressed: () => showDialog(
                             context: context,
                             builder: (_) => AlertDialog(
-                              title: Text("Deseja realmente excluir a reunião ${reunioesList[index].descricao}?"),
+                              title: Text("Deseja realmente excluir a reunião ${
+                                _searchController.text.isNotEmpty
+                                ? reunioesListOnSearch[index].descricao
+                                : reunioesList[index].descricao
+                              }?"),
                               actions: [
                                 ElevatedButton(
                                   child: const Text("Cancelar"),
@@ -98,7 +168,11 @@ class ReunioesListPageState extends State<ReunioesListPage> {
                                 ElevatedButton(
                                   child: const Text("Deletar"),
                                   onPressed: () {
-                                    delete(reunioesList[index].id);
+                                    delete(
+                                      _searchController.text.isNotEmpty
+                                      ? reunioesListOnSearch[index].id
+                                      : reunioesList[index].id
+                                    );
                                     Navigator.of(context).pop();
                                   },
                                 )
@@ -131,7 +205,7 @@ class ReunioesListPageState extends State<ReunioesListPage> {
 
   void initFirestore() async {
     // Retorna um "mapa snapshot" de toda a coleção especificada
-    QuerySnapshot query = await db.collection("reunioes").get();
+    QuerySnapshot query = await db.collection("reunioes").orderBy("descricao").get();
 
     reunioesList = [];
     // Para cada documento da coleção é gerado um objeto reunião e adicionado à lista de objtos do mesmo tipo

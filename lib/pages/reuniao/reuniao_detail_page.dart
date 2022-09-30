@@ -36,11 +36,8 @@ final List<String> diasSemana = [
 
 // Máscara do campo de horario início / término
 final horario = MaskTextInputFormatter(
-  mask: '*@:&#',
+  mask: '##:##',
   filter: {
-    '*': RegExp(r'[0-2]'),
-    '@': RegExp(r'[0-3]'),
-    '&': RegExp(r'[0-5]'),
     '#': RegExp(r'[0-9]'),
   },
   type: MaskAutoCompletionType.eager,

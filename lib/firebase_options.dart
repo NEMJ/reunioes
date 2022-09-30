@@ -25,10 +25,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -47,32 +44,40 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDyp3KT3WqZnT9tANcwvCpgC_NyzZ3l_Cs',
-    appId: '1:134815181682:web:02611dbd4dfbf322b20beb',
-    messagingSenderId: '134815181682',
-    projectId: 'reunioes-6e76e',
-    authDomain: 'reunioes-6e76e.firebaseapp.com',
-    databaseURL: 'https://reunioes-6e76e-default-rtdb.firebaseio.com',
-    storageBucket: 'reunioes-6e76e.appspot.com',
+    apiKey: 'AIzaSyDdeRNOjG2sv44IP7Xyp_DlFw11B3zRpbk',
+    appId: '1:308028823623:web:d033ac488fba81265a7962',
+    messagingSenderId: '308028823623',
+    projectId: 'app-reunioes',
+    authDomain: 'app-reunioes.firebaseapp.com',
+    storageBucket: 'app-reunioes.appspot.com',
+    measurementId: 'G-CFZCSB6Y5X',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAhjmeZy0WpPXGloPofmm-mbq5LTWpLP00',
-    appId: '1:134815181682:android:b68de363190fad93b20beb',
-    messagingSenderId: '134815181682',
-    projectId: 'reunioes-6e76e',
-    databaseURL: 'https://reunioes-6e76e-default-rtdb.firebaseio.com',
-    storageBucket: 'reunioes-6e76e.appspot.com',
+    apiKey: 'AIzaSyDcDJnZxD1UTJFW2voc6hqvEJXP2dFYOPo',
+    appId: '1:308028823623:android:bceeeb690b9433fb5a7962',
+    messagingSenderId: '308028823623',
+    projectId: 'app-reunioes',
+    storageBucket: 'app-reunioes.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBqxeUuP_5hOSG-H_k4b2Oh9w1F67db6DA',
-    appId: '1:134815181682:ios:d431cefc877107adb20beb',
-    messagingSenderId: '134815181682',
-    projectId: 'reunioes-6e76e',
-    databaseURL: 'https://reunioes-6e76e-default-rtdb.firebaseio.com',
-    storageBucket: 'reunioes-6e76e.appspot.com',
-    iosClientId: '134815181682-d6j5rvgrvp56vf0ha1vrlj7cjjgs5f3v.apps.googleusercontent.com',
+    apiKey: 'AIzaSyDKmyufyw-FbOikVoiOWfHs--iMOdNc908',
+    appId: '1:308028823623:ios:dc22133f80a4c5b65a7962',
+    messagingSenderId: '308028823623',
+    projectId: 'app-reunioes',
+    storageBucket: 'app-reunioes.appspot.com',
+    iosClientId: '308028823623-sv6cbrapbdieg4vfcok0qjre4i6992fg.apps.googleusercontent.com',
     iosBundleId: 'com.example.reunioes',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyDKmyufyw-FbOikVoiOWfHs--iMOdNc908',
+    appId: '1:308028823623:ios:b0461986a85a93605a7962',
+    messagingSenderId: '308028823623',
+    projectId: 'app-reunioes',
+    storageBucket: 'app-reunioes.appspot.com',
+    iosClientId: '308028823623-fns2aitoqq5ica118pk5vp0s6u6suho3.apps.googleusercontent.com',
+    iosBundleId: 'n',
   );
 }

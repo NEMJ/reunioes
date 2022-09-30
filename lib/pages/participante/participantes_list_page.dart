@@ -11,10 +11,13 @@ class ParticipantesListPage extends StatefulWidget {
 }
 
 class _ParticipantesListPageState extends State<ParticipantesListPage> {
+
+  TextEditingController _searchController = TextEditingController();
   
   // Instancia do Firestore
   FirebaseFirestore db = FirebaseFirestore.instance;
   List<Participante> participantesList = [];
+  List<Participante> participantesListOnSearch = [];
 
   @override
   void initState() {
@@ -22,7 +25,7 @@ class _ParticipantesListPageState extends State<ParticipantesListPage> {
     initFirestore();
 
     // Atualização em tempo real
-    db.collection('participantes').snapshots().listen((query) {
+    db.collection('participantes').orderBy("nome").snapshots().listen((query) {
       participantesList = [];
       if(query.docs.isEmpty) {
         setState(() {});
@@ -69,12 +72,65 @@ class _ParticipantesListPageState extends State<ParticipantesListPage> {
         body: Container(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Flexible(
+              Container(
+                margin: EdgeInsets.only(bottom: 7),
+                decoration: BoxDecoration(
+                  color: Colors.purple.shade100,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: TextField(
+                  onChanged: (value) {
+                    setState(() {
+                      // Insere elementos na lista de filtragem conforme satisfeita a condição de pesquisa
+                      participantesListOnSearch = participantesList
+                        .where((element) => element.nome.toLowerCase().contains(value.toLowerCase())).toList();
+                    });
+                  },
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    errorBorder: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    contentPadding: EdgeInsets.all(15),
+                    hintText: 'Pesquisar',
+                    prefixIcon: Icon(Icons.search),
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.close),
+                      onPressed: () {
+                        participantesListOnSearch.clear();
+                        setState(() {
+                          _searchController.text = '';
+                        });
+                      },
+                    ),
+                  ),
+                ),
+              ),
+              _searchController.text.isNotEmpty && participantesListOnSearch.isEmpty 
+              ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Icon(Icons.search_off, size: 100, color: Colors.purple),
+                    Text(
+                      'Sem resultados',
+                      style: TextStyle(
+                        fontSize: 35,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+              : Flexible(
                 child: ListView.builder(
                   shrinkWrap: true,
-                  itemCount: participantesList.length,
+                  itemCount: _searchController.text.isNotEmpty
+                    ? participantesListOnSearch.length
+                    : participantesList.length,
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 8.0),
@@ -86,9 +142,17 @@ class _ParticipantesListPageState extends State<ParticipantesListPage> {
                         leading: const CircleAvatar(
                           child: Icon(Icons.person_rounded),
                         ),
-                        title: Text(participantesList[index].nome),
+                        title: Text(
+                          _searchController.text.isNotEmpty
+                          ? participantesListOnSearch[index].nome
+                          : participantesList[index].nome
+                        ),
                         onTap: () {
-                          detailParticipante(participantesList[index]);
+                          detailParticipante(
+                            _searchController.text.isNotEmpty
+                            ? participantesListOnSearch[index]
+                            : participantesList[index]
+                          );
                         },
                         trailing: IconButton(
                           icon: const Icon(Icons.cancel),
@@ -96,7 +160,11 @@ class _ParticipantesListPageState extends State<ParticipantesListPage> {
                           onPressed: () => showDialog(
                             context: context,
                             builder: (_) => AlertDialog(
-                              title: Text("Deseja relamente excluir o participante ${participantesList[index].nome}?"),
+                              title: Text("Deseja relamente excluir o participante ${
+                                _searchController.text.isNotEmpty
+                                ? participantesListOnSearch[index].nome
+                                : participantesList[index].nome
+                              }?"),
                               actions: [
                                 ElevatedButton(
                                   child: const Text('Cancelar'),
@@ -105,7 +173,11 @@ class _ParticipantesListPageState extends State<ParticipantesListPage> {
                                 ElevatedButton(
                                   child: const Text('Deletar'),
                                   onPressed: () {
-                                    delete(participantesList[index].id);
+                                    delete(
+                                      _searchController.text.isNotEmpty
+                                      ? participantesListOnSearch[index].id
+                                      : participantesList[index].id
+                                    );
                                     Navigator.of(context).pop();
                                   },
                                 ),
@@ -138,7 +210,7 @@ class _ParticipantesListPageState extends State<ParticipantesListPage> {
 
   void initFirestore() async {
     // Retorna um "mapa snapshot" de toda a coleção especificada
-    QuerySnapshot query = await db.collection("participantes").get();
+    QuerySnapshot query = await db.collection("participantes").orderBy("nome").get();
     
     participantesList = [];
     // Para cada documento da coleção é gerado um objeto reunião e adicionado à lista de objtos do mesmo tipo
