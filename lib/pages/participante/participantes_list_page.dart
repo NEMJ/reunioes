@@ -36,6 +36,7 @@ class _ParticipantesListPageState extends State<ParticipantesListPage> {
             tipoParticipante: doc.get('tipoParticipante'),
             reunioes: doc.get('reunioes'),
             nome: doc.get('nome'),
+            apelido: doc.get('apelido'),
             rua: doc.get('rua'),
             bairro: doc.get('bairro'),
             cidade: doc.get('cidade'),
@@ -43,6 +44,7 @@ class _ParticipantesListPageState extends State<ParticipantesListPage> {
             contato: doc.get('contato'),
             telFixo: doc.get('telFixo'),
             profissao: doc.get('profissao'),
+            formProf: doc.get('formProf'),
             localTrabalho: doc.get('localTrabalho'),
             dataNascimento: doc.get('dataNascimento'),
           );
@@ -220,6 +222,7 @@ class _ParticipantesListPageState extends State<ParticipantesListPage> {
         tipoParticipante: doc.get("tipoParticipante"),
         reunioes: doc.get('reunioes'),
         nome: doc.get('nome'),
+        apelido: doc.get('apelido'),
         rua: doc.get('rua'),
         bairro: doc.get('bairro'),
         cidade: doc.get('cidade'),
@@ -227,6 +230,7 @@ class _ParticipantesListPageState extends State<ParticipantesListPage> {
         contato: doc.get('contato'),
         telFixo: doc.get('telFixo'),
         profissao: doc.get('profissao'),
+        formProf: doc.get('formProf'),
         localTrabalho: doc.get('localTrabalho'),
         dataNascimento: doc.get('dataNascimento'),
       );

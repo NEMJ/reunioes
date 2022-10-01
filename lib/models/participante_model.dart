@@ -5,7 +5,7 @@ class Participante {
     required this.tipoParticipante,
     required this.reunioes,
     required this.nome,
-    this.apelido,
+    required this.apelido,
     required this.rua,
     required this.bairro,
     required this.cidade,
@@ -13,6 +13,7 @@ class Participante {
     required this.contato,
     required this.telFixo,
     required this. profissao,
+    required this. formProf,
     required this. localTrabalho,
     required this.dataNascimento,
   });
@@ -22,7 +23,7 @@ class Participante {
   String tipoParticipante;
   List<dynamic> reunioes;
   String nome;
-  String? apelido;
+  String apelido;
   String rua;
   String bairro;
   String cidade;
@@ -30,6 +31,7 @@ class Participante {
   String contato;
   String telFixo;
   String profissao;
+  String formProf;
   String localTrabalho;
   String dataNascimento;
 

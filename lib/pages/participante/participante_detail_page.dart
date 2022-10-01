@@ -20,12 +20,14 @@ class ParticipanteDetailPage extends StatefulWidget {
 
 // É instanciado um 'controller' para cada campo de texto
 final _nomeController = TextEditingController();
+final _apelidoController = TextEditingController();
 final _ruaController = TextEditingController();
 final _bairroController = TextEditingController();
 final _cidadeController = TextEditingController();
 final _contatoController = TextEditingController();
 final _telFixoController = TextEditingController();
 final _profissaoController = TextEditingController();
+final _formProfController = TextEditingController();
 final _localTrabalhoController = TextEditingController();
 final _dataNascimentoController = TextEditingController();
 
@@ -177,6 +179,17 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 16.0),
                         child: TextFormField(
+                          controller: _apelidoController,
+                          decoration: const InputDecoration(
+                            labelText: 'Apelido',
+                            labelStyle: TextStyle(fontSize: 17.5),
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: TextFormField(
                           controller: _contatoController,
                           decoration: const InputDecoration(
                             labelText: 'Celular',
@@ -264,6 +277,17 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
                           controller: _profissaoController,
                           decoration: const InputDecoration(
                             labelText: 'Profissão',
+                            labelStyle: TextStyle(fontSize: 17.5),
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: TextFormField(
+                          controller: _formProfController,
+                          decoration: const InputDecoration(
+                            labelText: 'Formação Profissional',
                             labelStyle: TextStyle(fontSize: 17.5),
                             border: OutlineInputBorder(),
                           ),
@@ -381,6 +405,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
     if(widget.participante == null) {
       tipoParticipante = '';
       _nomeController.text = '';
+      _apelidoController.text = '';
       _ruaController.text = '';
       _bairroController.text = '';
       _cidadeController.text = '';
@@ -388,12 +413,14 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
       _contatoController.text = '';
       _telFixoController.text = '';
       _profissaoController.text = '';
+      _formProfController.text = '';
       _localTrabalhoController.text = '';
       _dataNascimentoController.text = '';
     } else {
       setState(() {
         tipoParticipante = widget.participante!.tipoParticipante;
         _nomeController.text = widget.participante!.nome;
+        _apelidoController.text = widget.participante!.apelido;
         _ruaController.text = widget.participante!.rua;
         _bairroController.text = widget.participante!.bairro;
         _cidadeController.text = widget.participante!.cidade;
@@ -401,6 +428,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
         _contatoController.text = widget.participante!.contato;
         _telFixoController.text = widget.participante!.telFixo;
         _profissaoController.text = widget.participante!.profissao;
+        _formProfController.text = widget.participante!.formProf;
         _localTrabalhoController.text = widget.participante!.localTrabalho;
         _dataNascimentoController.text = widget.participante!.dataNascimento;
       });
@@ -415,6 +443,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
         'tipoParticipante': tipoParticipante,
         'reunioes': reunioesMarcadas.map((reuniao) => reuniao.toMap()).toList(),
         'nome': _nomeController.text,
+        'apelido': _apelidoController.text,
         'rua': _ruaController.text,
         'bairro': _bairroController.text,
         'cidade': _cidadeController.text,
@@ -422,6 +451,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
         'contato': _contatoController.text,
         'telFixo': _telFixoController.text,
         'profissao': _profissaoController.text,
+        'formProf': _formProfController.text,
         'localTrabalho': _localTrabalhoController.text,
         'dataNascimento': _dataNascimentoController.text,
       // Confirmação visual de sucesso
@@ -446,6 +476,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
         'tipoParticipante': tipoParticipante,
         'reunioes': reunioesMarcadas.map((reuniao) => reuniao.toMap()).toList(),
         'nome': _nomeController.text,
+        'apelido': _apelidoController.text,
         'rua': _ruaController.text,
         'bairro': _bairroController.text,
         'cidade': _cidadeController.text,
@@ -453,6 +484,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
         'contato': _contatoController.text,
         'telFixo': _telFixoController.text,
         'profissao': _profissaoController.text,
+        'formProf': _formProfController.text,
         'localTrabalho': _localTrabalhoController.text,
         'dataNascimento': _dataNascimentoController.text,
       // Confirmação visual de sucesso
@@ -467,6 +499,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
       // Limpeza do conteúdo de todos os TextFields para uma nova inserção
       tipoParticipante = '';
       _nomeController.text = '';
+      _apelidoController.text = '';
       _ruaController.text = '';
       _bairroController.text = '';
       _cidadeController.text = '';
@@ -474,6 +507,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
       _contatoController.text = '';
       _telFixoController.text = '';
       _profissaoController.text = '';
+      _formProfController.text = '';
       _localTrabalhoController.text = '';
       _dataNascimentoController.text = '';
     }
