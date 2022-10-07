@@ -1,34 +1,78 @@
 {
   "project_info": {
-    "project_number": "308028823623",
-    "project_id": "app-reunioes",
-    "storage_bucket": "app-reunioes.appspot.com"
+    "project_number": "134815181682",
+    "firebase_url": "https://reunioes-6e76e-default-rtdb.firebaseio.com",
+    "project_id": "reunioes-6e76e",
+    "storage_bucket": "reunioes-6e76e.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:308028823623:android:bceeeb690b9433fb5a7962",
+        "mobilesdk_app_id": "1:134815181682:android:1e445781da366ec8b20beb",
         "android_client_info": {
-          "package_name": "com.example.reunioes"
+          "package_name": "com.example.likes"
         }
       },
       "oauth_client": [
         {
-          "client_id": "308028823623-3ek17m9ploojdk89vff53mg77ubeq53d.apps.googleusercontent.com",
+          "client_id": "134815181682-dkpdn7brg7ja338c1krb7mbd6sb0bqit.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDcDJnZxD1UTJFW2voc6hqvEJXP2dFYOPo"
+          "current_key": "AIzaSyAhjmeZy0WpPXGloPofmm-mbq5LTWpLP00"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "308028823623-3ek17m9ploojdk89vff53mg77ubeq53d.apps.googleusercontent.com",
+              "client_id": "134815181682-dkpdn7brg7ja338c1krb7mbd6sb0bqit.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "134815181682-42kq0sscmr5k4s0h7pfthalp95uchif4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.likes"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:134815181682:android:b68de363190fad93b20beb",
+        "android_client_info": {
+          "package_name": "com.example.reunioes"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "134815181682-dkpdn7brg7ja338c1krb7mbd6sb0bqit.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhjmeZy0WpPXGloPofmm-mbq5LTWpLP00"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "134815181682-dkpdn7brg7ja338c1krb7mbd6sb0bqit.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "134815181682-42kq0sscmr5k4s0h7pfthalp95uchif4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.likes"
+              }
             }
           ]
         }

@@ -1,5 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:reunioes/pages/participante/participante_detail_page.dart';
 import 'package:reunioes/models/participante_model.dart';
 
@@ -16,11 +17,19 @@ class _ParticipantesListPageState extends State<ParticipantesListPage> {
   
   // Instancia do Firestore
   FirebaseFirestore db = FirebaseFirestore.instance;
+  // Lista com todos os participantes cadastrados
   List<Participante> participantesList = [];
+  // Lista de participantes correspondentes ao termo de busca
   List<Participante> participantesListOnSearch = [];
+
+  // Instancia do Firebase Storage
+  final FirebaseStorage storage = FirebaseStorage.instance;
 
   @override
   void initState() {
+    // Download das imagens relacionadas aos participantes cadastrados
+    loadImages();
+
     // Inicialização dos Dados
     initFirestore();
 
@@ -33,6 +42,7 @@ class _ParticipantesListPageState extends State<ParticipantesListPage> {
         query.docs.forEach((doc) {
           var participante = Participante(
             id: doc.get('id'),
+            refImage: doc.get('refImage'),
             tipoParticipante: doc.get('tipoParticipante'),
             reunioes: doc.get('reunioes'),
             nome: doc.get('nome'),
@@ -69,6 +79,7 @@ class _ParticipantesListPageState extends State<ParticipantesListPage> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
+          centerTitle: true,
           title: const Text("Lista de Participantes"),
         ),
         body: Container(
@@ -142,7 +153,9 @@ class _ParticipantesListPageState extends State<ParticipantesListPage> {
                         ),
                         tileColor: Colors.grey[200],
                         leading: const CircleAvatar(
-                          child: Icon(Icons.person_rounded),
+                          backgroundImage: NetworkImage(
+                            'https://firebasestorage.googleapis.com/v0/b/fir-storage-c6431.appspot.com/o/images%2Fimg-2022-10-03T20%3A13%3A07.965451.jpg?alt=media&token=763e3a34-1aa3-438d-beb4-43d92fa17ea8',
+                            ),
                         ),
                         title: Text(
                           _searchController.text.isNotEmpty
@@ -219,6 +232,7 @@ class _ParticipantesListPageState extends State<ParticipantesListPage> {
     query.docs.forEach((doc) {
       Participante participante = Participante(
         id: doc.get("id"),
+        refImage: doc.get("refImage"),
         tipoParticipante: doc.get("tipoParticipante"),
         reunioes: doc.get('reunioes'),
         nome: doc.get('nome'),
@@ -251,5 +265,10 @@ class _ParticipantesListPageState extends State<ParticipantesListPage> {
 
   void delete(String id) async {
     db.collection('participantes').doc(id).delete();
+  }
+
+
+  loadImages() async {
+    
   }
 }

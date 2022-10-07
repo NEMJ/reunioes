@@ -2,6 +2,7 @@ class Participante {
   // Construtor nomeado
   Participante({
     required this.id,
+    required this.refImage,
     required this.tipoParticipante,
     required this.reunioes,
     required this.nome,
@@ -13,13 +14,14 @@ class Participante {
     required this.contato,
     required this.telFixo,
     required this. profissao,
-    required this. formProf,
+    required this.formProf,
     required this. localTrabalho,
     required this.dataNascimento,
   });
   
   // Atributos
   String id;
+  String refImage;
   String tipoParticipante;
   List<dynamic> reunioes;
   String nome;

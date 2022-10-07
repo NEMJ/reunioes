@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:reunioes/models/participante_model.dart';
 import 'package:reunioes/pages/widgets/checkbox_widget.dart';
@@ -33,6 +34,8 @@ final _dataNascimentoController = TextEditingController();
 
 final _formKey = GlobalKey<FormState>();
 
+// Instancia do Firebase Storage
+final FirebaseStorage storage = FirebaseStorage.instance;
 
 // Instância do banco Cloud Firestore
 FirebaseFirestore db = FirebaseFirestore.instance;
@@ -120,6 +123,13 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
         title: (widget.participante != null) 
           ? Text(widget.participante!.nome)
           : const Text('Cadastro de Participantes'),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.upload),
+            onPressed: () {},
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -440,6 +450,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
     if(_formKey.currentState!.validate()) { 
       // Atualização de todos os campos no registro passado à esta página por parâmetro
       db.collection('participantes').doc(id).update({
+        // 'refImage' : refImage,
         'tipoParticipante': tipoParticipante,
         'reunioes': reunioesMarcadas.map((reuniao) => reuniao.toMap()).toList(),
         'nome': _nomeController.text,
@@ -473,6 +484,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
       // Envio de um novo registro para o banco na coleção 'reunioes'
       db.collection('participantes').doc(id).set({
         'id': id,
+        // 'refImage' : refImage,
         'tipoParticipante': tipoParticipante,
         'reunioes': reunioesMarcadas.map((reuniao) => reuniao.toMap()).toList(),
         'nome': _nomeController.text,
@@ -526,5 +538,10 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
     });
 
     return reunioesMarcadas;
+  }
+
+
+  loadImages() async {
+    String ref = (await storage.ref('images/${widget.participante!.id}.jpg').getDownloadURL());
   }
 }
