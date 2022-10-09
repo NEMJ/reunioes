@@ -1,10 +1,13 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:reunioes/models/participante_model.dart';
 import 'package:reunioes/pages/widgets/checkbox_widget.dart';
 import 'package:uuid/uuid.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:flutter_native_image/flutter_native_image.dart';
 
 class ParticipanteDetailPage extends StatefulWidget {
   ParticipanteDetailPage({
@@ -74,11 +77,27 @@ final dataMask = MaskTextInputFormatter(
 
 
 class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
+  // Variáveis necessárias para uploading da imagem
+  double total = 0;
+  bool uploading = false;
+  String title = '';
+  late String refImage;
+
+  // ID de novo usuário
+  late String id;
+
   @override
   void initState() {
     List<String> aux = [];
     if(widget.participante != null) {
+      // Caso seja um acesso às infomações de um usuário cadastrado
+      // é feita uma separação de todas as reuniões marcadas
       widget.participante!.reunioes.forEach((reuniao) => aux.add(reuniao['id']));
+      // 
+      refImage = widget.participante!.refImage;
+    } else {
+      // caso seja um cadastro, é gerado um novo ID
+      id = const Uuid().v1();
     }
 
     db.collection('reunioes').snapshots().listen((query) {
@@ -96,6 +115,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
             );
         });
 
+        // É feita uma comparação com as reunioes cadastradas para atualizar a lista para cada participante
         for(var i = 0; i < reunioes.length; i++) {
           if(aux.contains(reunioes[i].id)) {
             reunioes[i].checked = true;
@@ -105,6 +125,10 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
       }
     });
 
+    //Título da página -> Padrão // Dinâmico
+    title = (widget.participante != null)
+      ? widget.participante!.nome
+      : 'Cadastro de participante';
 
     /* 
      * Cada campo de texto é iniciado de acordo com a situação no 'initControllers()'
@@ -120,14 +144,14 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
     return Scaffold(
       appBar: AppBar(
         // Caso já exista o registro ele traz o nome do participante; se não, o título da página
-        title: (widget.participante != null) 
-          ? Text(widget.participante!.nome)
-          : const Text('Cadastro de Participantes'),
+        title: uploading
+          ? Text('${total.round()}% enviado')
+          : Text(title),
         centerTitle: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.upload),
-            onPressed: () {},
+            onPressed: pickAndUploadImage,
           ),
         ],
       ),
@@ -450,7 +474,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
     if(_formKey.currentState!.validate()) { 
       // Atualização de todos os campos no registro passado à esta página por parâmetro
       db.collection('participantes').doc(id).update({
-        // 'refImage' : refImage,
+        'refImage' : refImage,
         'tipoParticipante': tipoParticipante,
         'reunioes': reunioesMarcadas.map((reuniao) => reuniao.toMap()).toList(),
         'nome': _nomeController.text,
@@ -478,13 +502,11 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
   // Envio de dados para o banco e tratamento interno dos TextFields
   void sendData() {
     if(_formKey.currentState!.validate()) { 
-      // Geração do ID aleatório
-      String id = const Uuid().v1();
 
       // Envio de um novo registro para o banco na coleção 'reunioes'
       db.collection('participantes').doc(id).set({
         'id': id,
-        // 'refImage' : refImage,
+        'refImage' : refImage,
         'tipoParticipante': tipoParticipante,
         'reunioes': reunioesMarcadas.map((reuniao) => reuniao.toMap()).toList(),
         'nome': _nomeController.text,
@@ -515,7 +537,10 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
       _ruaController.text = '';
       _bairroController.text = '';
       _cidadeController.text = '';
-      uf = '';
+      setState(() {
+        uf = '';
+        refImage = '';
+      });
       _contatoController.text = '';
       _telFixoController.text = '';
       _profissaoController.text = '';
@@ -540,8 +565,57 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
     return reunioesMarcadas;
   }
 
+  // Função para comprimir a imagem antes de enviar para o banco
+  Future<File> compressImage(String filePath) async {
+    File compressFile = await FlutterNativeImage.compressImage(filePath, quality: 70, percentage: 40);
+    return compressFile;
+  }
 
-  loadImages() async {
-    String ref = (await storage.ref('images/${widget.participante!.id}.jpg').getDownloadURL());
+  // Função para abrir a galeria e, assim que escolhida a image, comprimí-la
+  Future<File?> getImageCompress() async {
+    final ImagePicker _picker = ImagePicker();
+    XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    File? compress;
+
+    if(image != null) {
+      compress = await compressImage(image.path);
+    }
+
+    return compress;
+  }
+
+  // Função para nomear o arquivo e enviar para o banco
+  Future<UploadTask> upload(String path) async {
+    File file = File(path);
+    try {
+      String ref = 'images/${
+          (widget.participante != null)
+          ? widget.participante!.id
+          : id
+        }.jpg';
+      return storage.ref(ref).putFile(file);
+    } on FirebaseException catch(e) {
+      throw Exception('Erro no upload: ${e.code}');
+    }
+  }
+
+  pickAndUploadImage() async {
+    File? file = await getImageCompress();
+
+    if(file != null) {
+      UploadTask task = await upload(file.path);
+
+      task.snapshotEvents.listen((TaskSnapshot snapshot) async {
+        if(snapshot.state == TaskState.running) {
+          setState(() {
+            uploading = true;
+            total = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          });
+        } else if(snapshot.state == TaskState.success) {
+          refImage = await snapshot.ref.getDownloadURL();
+          setState(() => uploading = false);
+        }
+      });
+    }
   }
 }
