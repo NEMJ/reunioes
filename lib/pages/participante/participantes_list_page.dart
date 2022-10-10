@@ -152,11 +152,17 @@ class _ParticipantesListPageState extends State<ParticipantesListPage> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         tileColor: Colors.grey[200],
-                        leading: const CircleAvatar(
-                          backgroundImage: NetworkImage(
-                            'https://firebasestorage.googleapis.com/v0/b/fir-storage-c6431.appspot.com/o/images%2Fimg-2022-10-03T20%3A13%3A07.965451.jpg?alt=media&token=763e3a34-1aa3-438d-beb4-43d92fa17ea8',
+                        leading: _searchController.text.isNotEmpty
+                          ? CircleAvatar(
+                              backgroundImage: NetworkImage(
+                                participantesListOnSearch[index].refImage,
+                              ),
+                            )
+                          : CircleAvatar(
+                              backgroundImage: NetworkImage(
+                                participantesList[index].refImage
+                              ),
                             ),
-                        ),
                         title: Text(
                           _searchController.text.isNotEmpty
                           ? participantesListOnSearch[index].nome
