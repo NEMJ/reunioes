@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:reunioes/pages/participante/new_participante_detail_page.dart';
 import 'package:reunioes/pages/participante/participante_detail_page.dart';
 import 'package:reunioes/models/participante_model.dart';
 
@@ -264,7 +265,7 @@ class _ParticipantesListPageState extends State<ParticipantesListPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => ParticipanteDetailPage(participante: participante),
+        builder: (_) => NewParticipanteDetailPage(participante: participante),
       ),
     );
   }
