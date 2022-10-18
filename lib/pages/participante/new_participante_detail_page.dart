@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:reunioes/models/participante_model.dart';
+import 'package:reunioes/pages/widgets/text_form_field_widget.dart';
+import 'package:reunioes/pages/widgets/user_profile_photo_widget.dart';
 
 class NewParticipanteDetailPage extends StatefulWidget {
   NewParticipanteDetailPage({
@@ -14,6 +16,9 @@ class NewParticipanteDetailPage extends StatefulWidget {
 }
 
 class _NewParticipanteDetailPageState extends State<NewParticipanteDetailPage> {
+
+  TextEditingController _controller = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,60 +34,9 @@ class _NewParticipanteDetailPageState extends State<NewParticipanteDetailPage> {
           onTap: () => FocusScope.of(context).unfocus(),
           child: ListView(
             children: [
-              Center(
-                child: Stack(
-                  children: [
-                    Container(
-                      width: 130,
-                      height: 130,
-                      decoration: BoxDecoration(
-                        color: Colors.deepPurple,
-                        border: Border.all(width: 4, color: Colors.white),
-                        boxShadow: [
-                          BoxShadow(
-                            spreadRadius: 2,
-                            blurRadius: 10,
-                            color: Colors.deepPurple,
-                          ),
-                        ],
-                        shape: BoxShape.circle,
-                        // image: DecorationImage(
-                        //   image: Image.asset(
-                        //     'images/user_account.jpg',
-                        //     fit: BoxFit.fill,
-                        //   ).image,
-                        // ),
-                        image: DecorationImage(
-                          fit: BoxFit.cover,
-                          image: NetworkImage("https://cdn.pixabay.com/photo/2017/11/19/07/30/girl-2961959_960_720.jpg"),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            width: 3,
-                            color: Colors.white,
-                          ),
-                          color: Colors.deepPurple,
-                        ),
-                        child: IconButton(
-                          padding: EdgeInsets.only(top: 0),
-                          icon: Icon(Icons.edit),
-                          color: Colors.white,
-                          onPressed: () {},
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              UserProfilePhotoWidget(),
+              const SizedBox(height: 30),
+              TextFormFieldWidget(label: 'Nome Completo', controller: _controller, validator: true),
             ],
           ),
         ),
