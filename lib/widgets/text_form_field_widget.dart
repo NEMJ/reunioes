@@ -24,16 +24,25 @@ class TextFormFieldWidget extends StatelessWidget {
         decoration: InputDecoration(
           labelText: label,
           floatingLabelBehavior: FloatingLabelBehavior.always,
-          labelStyle: TextStyle(fontSize: 19, fontWeight: FontWeight.w600, color: Colors.deepPurple),
-          border: OutlineInputBorder(),
-          enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey.shade400)),
-          focusedBorder: OutlineInputBorder(borderSide: BorderSide(width: 1.5, color: Colors.deepPurple)),
+          labelStyle: const TextStyle(
+            fontSize: 19,
+            fontWeight: FontWeight.w600,
+            color: Colors.deepPurple,
+          ),
+          border: const OutlineInputBorder(),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey.shade400),
+          ),
+          focusedBorder: const OutlineInputBorder(
+            borderSide: BorderSide(width: 1.5, color: Colors.deepPurple,),
+          ),
         ),
         validator: validator
          ? (value) {
             if(value == null || value.isEmpty) {
               return 'Informe o $label';
             }
+            return null;
           }
         : null,
         inputFormatters: mask != null

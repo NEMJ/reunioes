@@ -4,7 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:reunioes/models/participante_model.dart';
-import 'package:reunioes/pages/widgets/checkbox_widget.dart';
+import 'package:reunioes/widgets/checkbox_widget.dart';
 import 'package:uuid/uuid.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';

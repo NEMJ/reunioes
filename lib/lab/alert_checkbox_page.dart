@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:reunioes/pages/widgets/checkbox_widget.dart';
+import 'package:reunioes/widgets/checkbox_widget.dart';
 
 class AlertCheckboxPage extends StatefulWidget {
   const AlertCheckboxPage({ Key? key }) : super(key: key);

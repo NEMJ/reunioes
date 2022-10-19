@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:reunioes/models/participante_model.dart';
-import 'package:reunioes/pages/widgets/text_form_field_widget.dart';
-import 'package:reunioes/pages/widgets/user_profile_photo_widget.dart';
+import 'package:reunioes/widgets/text_form_field_widget.dart';
+import 'package:reunioes/widgets/user_profile_photo_widget.dart';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:reunioes/pages/widgets/checkbox_widget.dart';
+import 'package:reunioes/widgets/checkbox_widget.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
+
+import 'package:reunioes/widgets/dropdown_form_field_widget.dart';
 
 class NewParticipanteDetailPage extends StatefulWidget {
   NewParticipanteDetailPage({
@@ -55,7 +57,7 @@ final List<String> ufList = ['', 'AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES',
 
 
 // Bloco responsável pela definição do tipo de inserção de cadastro
-String? tipoParticipante;
+late String tipoParticipante;
 final List<String> tiposParticipante = ['Dirigente', 'Entidade', 'Participante'];
 
 
@@ -67,6 +69,13 @@ List<CheckboxModel> reunioesMarcadas = [];
 // Máscara para o campo de celular
 final contatoMask = MaskTextInputFormatter(
   mask: '(##) # ####-####',
+  filter: {'#': RegExp(r'[0-9]')},
+  type: MaskAutoCompletionType.lazy,
+);
+
+// Máscara para o campo de celular
+final telFixoMask = MaskTextInputFormatter(
+  mask: '(##) ####-####',
   filter: {'#': RegExp(r'[0-9]')},
   type: MaskAutoCompletionType.lazy,
 );
@@ -94,7 +103,7 @@ class _NewParticipanteDetailPageState extends State<NewParticipanteDetailPage> {
       // Caso seja um acesso às infomações de um usuário cadastrado
       // é feita uma separação de todas as reuniões marcadas
       widget.participante!.reunioes.forEach((reuniao) => aux.add(reuniao['id']));
-      // 
+      // é capturado o link para acessar a foto na internet
       refImage = widget.participante!.refImage;
     } else {
       // caso seja um cadastro, é gerado um novo ID
@@ -111,7 +120,6 @@ class _NewParticipanteDetailPageState extends State<NewParticipanteDetailPage> {
               CheckboxModel(
                 texto: doc.get('descricao'),
                 id: doc.get('id'),
-                // checked: (widget.participante != null) ? doc.get('checked') : false,
               ),
             );
         });
@@ -150,7 +158,7 @@ class _NewParticipanteDetailPageState extends State<NewParticipanteDetailPage> {
           : "New Participante"),
       ),
       body: Padding(
-        padding: const EdgeInsets.only(right: 25, left: 25),
+        padding: const EdgeInsets.symmetric(horizontal: 22),
         child: GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
           child: Form(
@@ -163,24 +171,108 @@ class _NewParticipanteDetailPageState extends State<NewParticipanteDetailPage> {
                       // UserProfilePhotoWidget(refImage: "https://cdn.pixabay.com/photo/2017/11/19/07/30/girl-2961959_960_720.jpg"),
                       UserProfilePhotoWidget(refImage: refImage),
                       const SizedBox(height: 30),
-                      TextFormFieldWidget(label: 'Nome', controller: _nomeController, validator: true),
-                      TextFormFieldWidget(label: 'Apelido', controller: _apelidoController, validator: false),
-                      TextFormFieldWidget(label: 'Data de Nascimento', controller: _dataNascimentoController, validator: false),
-                      TextFormFieldWidget(label: 'Celular', controller: _contatoController, validator: true, mask: contatoMask),
-                      TextFormFieldWidget(label: 'Telefone', controller: _telFixoController, validator: false),
+                      TextFormFieldWidget(
+                        label: 'Nome',
+                        controller: _nomeController,
+                        validator: true,
+                      ),
+                      TextFormFieldWidget(
+                        label: 'Apelido',
+                        controller: _apelidoController,
+                        validator: false,
+                      ),
                       Row(
                         children: [
-                          Flexible(flex: 3, child: TextFormFieldWidget(label: 'Tipo Participante', controller: _telFixoController, validator: false)),
-                          const SizedBox(width: 25),
-                          Flexible(child: TextFormFieldWidget(label: 'UF', controller: _apelidoController, validator: false)),
+                          Flexible(
+                            child: TextFormFieldWidget(
+                              label: 'Celular',
+                              controller: _contatoController,
+                              validator: true,
+                              mask: contatoMask,
+                            ),
+                          ),
+                          const SizedBox(width: 22),
+                          Flexible(
+                            child: TextFormFieldWidget(
+                              label: 'Telefone',
+                              controller: _telFixoController,
+                              validator: false,
+                              mask: telFixoMask,
+                            ),
+                          ),
                         ],
                       ),
-                      TextFormFieldWidget(label: 'Cidade', controller: _cidadeController, validator: false),
-                      TextFormFieldWidget(label: 'Rua', controller: _ruaController, validator: false),
-                      TextFormFieldWidget(label: 'Bairro', controller: _bairroController, validator: false),
-                      TextFormFieldWidget(label: 'Profissão', controller: _profissaoController, validator: false),
-                      TextFormFieldWidget(label: 'Formação Profissional', controller: _formProfController, validator: false),
-                      TextFormFieldWidget(label: 'Local de Trabalho', controller: _localTrabalhoController, validator: false),
+                      Row(
+                        children: [
+                          Flexible(
+                            child: TextFormFieldWidget(
+                              label: 'Data de Nascimento',
+                              controller: _dataNascimentoController,
+                              validator: false,
+                            ),
+                          ),
+                          const SizedBox(width: 22),
+                          Flexible(
+                            child: TextFormFieldWidget(
+                              label: 'Tipo Participante',
+                              controller: _telFixoController,
+                              validator: false,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Flexible(
+                            child: TextFormFieldWidget(
+                              label: 'UF',
+                              controller: _apelidoController,
+                              validator: false,
+                            ),
+                          ),
+                          const SizedBox(width: 22),
+                          Flexible(
+                            flex: 3,
+                            child: TextFormFieldWidget(
+                              label: 'Cidade',
+                              controller: _cidadeController,
+                              validator: false,
+                            ),
+                          ),
+                        ],
+                      ),
+                      TextFormFieldWidget(
+                        label: 'Rua',
+                        controller: _ruaController,
+                        validator: false,
+                      ),
+                      TextFormFieldWidget(
+                        label: 'Bairro',
+                        controller: _bairroController,
+                        validator: false,
+                      ),
+                      TextFormFieldWidget(
+                        label: 'Profissão',
+                        controller: _profissaoController,
+                        validator: false,
+                      ),
+                      TextFormFieldWidget(
+                        label: 'Formação Profissional',
+                        controller: _formProfController,
+                        validator: false,
+                      ),
+                      TextFormFieldWidget(
+                        label: 'Local de Trabalho',
+                        controller: _localTrabalhoController,
+                        validator: false,
+                      ),
+                      DropdownFormFieldWidget(
+                        listItems: tiposParticipante,
+                        label: 'Tipo Participante',
+                        validator: true,
+                        value: (widget.participante != null) ? widget.participante!.tipoParticipante : null,
+                        optionChanged: null,                        
+                      ),
                     ],
                   ),
                 ),
@@ -193,7 +285,7 @@ class _NewParticipanteDetailPageState extends State<NewParticipanteDetailPage> {
                       TextButton(
                         child: const Text('Selecione uma reunião'),
                         style: TextButton.styleFrom(
-                          backgroundColor: Colors.purple[100],
+                          backgroundColor: Colors.deepPurple[100],
                         ),
                         onPressed: () => showDialog(
                           context: context,
