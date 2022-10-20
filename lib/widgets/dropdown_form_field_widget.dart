@@ -29,6 +29,7 @@ class DropdownFormFieldWidget extends StatelessWidget {
         ).toList(),
         value: value,
         decoration: InputDecoration(
+          contentPadding: const EdgeInsets.fromLTRB(12, 16.4, 15, 16.4),
           labelText: label,
           floatingLabelBehavior: FloatingLabelBehavior.always,
           labelStyle: const TextStyle(
