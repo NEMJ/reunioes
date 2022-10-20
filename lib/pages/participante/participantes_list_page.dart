@@ -29,7 +29,7 @@ class _ParticipantesListPageState extends State<ParticipantesListPage> {
   @override
   void initState() {
     // Download das imagens relacionadas aos participantes cadastrados
-    loadImages();
+    // loadImages();
 
     // Inicialização dos Dados
     initFirestore();
@@ -218,7 +218,7 @@ class _ParticipantesListPageState extends State<ParticipantesListPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => ParticipanteDetailPage(),
+                      builder: (_) => NewParticipanteDetailPage(),
                     ),
                   );
                 },
@@ -272,10 +272,5 @@ class _ParticipantesListPageState extends State<ParticipantesListPage> {
 
   void delete(String id) async {
     db.collection('participantes').doc(id).delete();
-  }
-
-
-  loadImages() async {
-    
   }
 }

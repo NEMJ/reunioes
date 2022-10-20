@@ -90,9 +90,12 @@ final dataMask = MaskTextInputFormatter(
 
 
 class _NewParticipanteDetailPageState extends State<NewParticipanteDetailPage> {
-  String refImage = '';
+  // Variáveis necessárias para uploading da imagem
+  double total = 0;
+  bool uploading = false;
   String title = '';
-  
+  String refImage = '';
+
   // ID de novo usuário
   late String id;
 
@@ -153,9 +156,9 @@ class _NewParticipanteDetailPageState extends State<NewParticipanteDetailPage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text( widget.participante != null
-          ? widget.participante!.nome 
-          : "New Participante"),
+        title: uploading
+          ? Text('${total.round()}% enviado')
+          : Text(title),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 22),
@@ -168,8 +171,65 @@ class _NewParticipanteDetailPageState extends State<NewParticipanteDetailPage> {
                 Flexible(
                   child: ListView(
                     children: [
-                      // UserProfilePhotoWidget(refImage: "https://cdn.pixabay.com/photo/2017/11/19/07/30/girl-2961959_960_720.jpg"),
-                      UserProfilePhotoWidget(refImage: refImage),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 30.0),
+                        child: Center(
+                          child: Stack(
+                            children: [
+                              Container(
+                                width: 130,
+                                height: 130,
+                                decoration: BoxDecoration(
+                                  color: Colors.deepPurple,
+                                  border: Border.all(width: 4, color: Colors.white),
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      spreadRadius: 1,
+                                      blurRadius: 10,
+                                      color: Colors.deepPurple,
+                                    ),
+                                  ],
+                                  shape: BoxShape.circle,
+                                  image: refImage.isNotEmpty
+                                  ?  DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: NetworkImage(refImage),
+                                    )
+                                  : DecorationImage(
+                                      image: Image.asset(
+                                        "images/user_account.png",
+                                        fit: BoxFit.cover,
+                                      ).image,
+                                    ),
+                                ),
+                                // child: Text('100%', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Colors.purple.shade900)),
+                              ),
+                              Positioned(
+                                bottom: 0,
+                                right: 0,
+                                child: Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      width: 3,
+                                      color: Colors.white,
+                                    ),
+                                    color: Colors.deepPurple,
+                                  ),
+                                  child: IconButton(
+                                    padding: const EdgeInsets.only(top: 0),
+                                    icon: const Icon(Icons.edit),
+                                    color: Colors.white,
+                                    onPressed: pickAndUploadImage,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                       const SizedBox(height: 30),
                       TextFormFieldWidget(
                         label: 'Nome',
@@ -213,10 +273,44 @@ class _NewParticipanteDetailPageState extends State<NewParticipanteDetailPage> {
                           ),
                           const SizedBox(width: 22),
                           Flexible(
-                            child: TextFormFieldWidget(
-                              label: 'Tipo Participante',
-                              controller: _telFixoController,
-                              validator: false,
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 25.0),
+                              // Widget que exibe algumas opções pré-estabelecidas para seleção
+                              child: DropdownButtonFormField(
+                                // Aqui é feito um Item do tipo que se espera através da lista por meio de um map
+                                items: tiposParticipante
+                                  .map((op) => DropdownMenuItem(
+                                    value: op,
+                                    child: Text(op),
+                                  ),
+                                ).toList(), // É esperado sempre uma lista
+                                // A variável recebe a opção selecionada para controle e inserção
+                                onChanged: (escolha) => setState(() => tipoParticipante = escolha as String),
+                                // Caso seja passado um participante para a tela, é mostrada a opção já cadastrada; se não, é mostrado apenas o título do campo
+                                value: (widget.participante != null) ? widget.participante!.tipoParticipante : null,
+                                decoration: InputDecoration(
+                                  contentPadding: const EdgeInsets.fromLTRB(12, 16.4, 15, 16.4),
+                                  labelText: 'Tipo de Participante',
+                                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                                  labelStyle: const TextStyle(
+                                    fontSize: 19,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.deepPurple,
+                                  ),
+                                  border: const OutlineInputBorder(),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.grey.shade400),
+                                  ),
+                                  focusedBorder: const OutlineInputBorder(
+                                    borderSide: BorderSide(width: 1.5, color: Colors.deepPurple,),
+                                  ),
+                                ),
+                                validator: (value) {
+                                  if(value == null) {
+                                    return 'Selecione uma opção';
+                                  }
+                                },
+                              ),
                             ),
                           ),
                         ],
@@ -224,10 +318,36 @@ class _NewParticipanteDetailPageState extends State<NewParticipanteDetailPage> {
                       Row(
                         children: [
                           Flexible(
-                            child: TextFormFieldWidget(
-                              label: 'UF',
-                              controller: _apelidoController,
-                              validator: false,
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 25.0),
+                              child: DropdownButtonFormField(
+                                items: ufList
+                                  .map((op) => DropdownMenuItem(
+                                    value: op,
+                                    child: Text(op),
+                                    ),
+                                  )
+                                  .toList(),
+                                onChanged: (escolha) => setState(() => uf = escolha as String),
+                                value: (widget.participante != null) ? widget.participante!.uf : null,
+                                decoration: InputDecoration(
+                                    contentPadding: const EdgeInsets.fromLTRB(12, 16.0, 15, 16.0),
+                                    labelText: 'UF',
+                                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                                    labelStyle: const TextStyle(
+                                      fontSize: 19,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.deepPurple,
+                                    ),
+                                    border: const OutlineInputBorder(),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.grey.shade400),
+                                    ),
+                                    focusedBorder: const OutlineInputBorder(
+                                      borderSide: BorderSide(width: 1.5, color: Colors.deepPurple,),
+                                    ),
+                                  ),
+                              ),
                             ),
                           ),
                           const SizedBox(width: 22),
@@ -265,13 +385,6 @@ class _NewParticipanteDetailPageState extends State<NewParticipanteDetailPage> {
                         label: 'Local de Trabalho',
                         controller: _localTrabalhoController,
                         validator: false,
-                      ),
-                      DropdownFormFieldWidget(
-                        listItems: tiposParticipante,
-                        label: 'Tipo Participante',
-                        validator: true,
-                        value: (widget.participante != null) ? widget.participante!.tipoParticipante : null,
-                        optionChanged: null,                        
                       ),
                     ],
                   ),
@@ -487,5 +600,60 @@ class _NewParticipanteDetailPageState extends State<NewParticipanteDetailPage> {
     });
 
     return reunioesMarcadas;
+  }
+
+
+  // Função para comprimir a imagem antes de enviar para o banco
+  Future<File> compressImage(String filePath) async {
+    File compressFile = await FlutterNativeImage.compressImage(filePath, quality: 70, percentage: 40);
+    return compressFile;
+  }
+
+  // Função para abrir a galeria e, assim que escolhida a image, comprimí-la
+  Future<File?> getImageCompress() async {
+    final ImagePicker _picker = ImagePicker();
+    XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    File? compress;
+
+    if(image != null) {
+      compress = await compressImage(image.path);
+    }
+
+    return compress;
+  }
+
+  // Função para nomear o arquivo e enviar para o banco
+  Future<UploadTask> upload(String path) async {
+    File file = File(path);
+    try {
+      String ref = 'images/${
+          (widget.participante != null)
+          ? widget.participante!.id
+          : id
+        }.jpg';
+      return storage.ref(ref).putFile(file);
+    } on FirebaseException catch(e) {
+      throw Exception('Erro no upload: ${e.code}');
+    }
+  }
+
+  pickAndUploadImage() async {
+    File? file = await getImageCompress();
+
+    if(file != null) {
+      UploadTask task = await upload(file.path);
+
+      task.snapshotEvents.listen((TaskSnapshot snapshot) async {
+        if(snapshot.state == TaskState.running) {
+          setState(() {
+            uploading = true;
+            total = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          });
+        } else if(snapshot.state == TaskState.success) {
+          refImage = await snapshot.ref.getDownloadURL();
+          setState(() => uploading = false);
+        }
+      });
+    }
   }
 }
