@@ -1,13 +1,17 @@
+import 'package:flutter/material.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:reunioes/models/participante_model.dart';
+import 'package:reunioes/widgets/text_form_field_widget.dart';
+import 'package:reunioes/widgets/user_profile_photo_widget.dart';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:reunioes/models/participante_model.dart';
 import 'package:reunioes/widgets/checkbox_widget.dart';
 import 'package:uuid/uuid.dart';
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
+
+import 'package:reunioes/widgets/dropdown_form_field_widget.dart';
 
 class ParticipanteDetailPage extends StatefulWidget {
   ParticipanteDetailPage({
@@ -21,6 +25,7 @@ class ParticipanteDetailPage extends StatefulWidget {
   @override
   State<ParticipanteDetailPage> createState() => _ParticipanteDetailPageState();
 }
+
 
 // É instanciado um 'controller' para cada campo de texto
 final _nomeController = TextEditingController();
@@ -52,7 +57,7 @@ final List<String> ufList = ['', 'AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES',
 
 
 // Bloco responsável pela definição do tipo de inserção de cadastro
-String? tipoParticipante;
+late String tipoParticipante;
 final List<String> tiposParticipante = ['Dirigente', 'Entidade', 'Participante'];
 
 
@@ -60,9 +65,17 @@ final List<String> tiposParticipante = ['Dirigente', 'Entidade', 'Participante']
 List<CheckboxModel> reunioes = [];
 List<CheckboxModel> reunioesMarcadas = []; 
 
+
 // Máscara para o campo de celular
 final contatoMask = MaskTextInputFormatter(
   mask: '(##) # ####-####',
+  filter: {'#': RegExp(r'[0-9]')},
+  type: MaskAutoCompletionType.lazy,
+);
+
+// Máscara para o campo de celular
+final telFixoMask = MaskTextInputFormatter(
+  mask: '(##) ####-####',
   filter: {'#': RegExp(r'[0-9]')},
   type: MaskAutoCompletionType.lazy,
 );
@@ -81,7 +94,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
   double total = 0;
   bool uploading = false;
   String title = '';
-  late String refImage;
+  String refImage = '';
 
   // ID de novo usuário
   late String id;
@@ -93,7 +106,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
       // Caso seja um acesso às infomações de um usuário cadastrado
       // é feita uma separação de todas as reuniões marcadas
       widget.participante!.reunioes.forEach((reuniao) => aux.add(reuniao['id']));
-      // 
+      // é capturado o link para acessar a foto na internet
       refImage = widget.participante!.refImage;
     } else {
       // caso seja um cadastro, é gerado um novo ID
@@ -110,7 +123,6 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
               CheckboxModel(
                 texto: doc.get('descricao'),
                 id: doc.get('id'),
-                // checked: (widget.participante != null) ? doc.get('checked') : false,
               ),
             );
         });
@@ -143,285 +155,254 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // Caso já exista o registro ele traz o nome do participante; se não, o título da página
+        centerTitle: true,
         title: uploading
           ? Text('${total.round()}% enviado')
           : Text(title),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.upload),
-            onPressed: pickAndUploadImage,
-          ),
-        ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Flexible(
-                child: SingleChildScrollView(
-                  child: Column(
+        padding: const EdgeInsets.symmetric(horizontal: 22),
+        child: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                Flexible(
+                  child: ListView(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(top: 5, bottom: 16.0),
-                        // Widget que exibe algumas opções pré-estabelecidas para seleção
-                        child: DropdownButtonFormField(
-                          // Aqui é feito um Item do tipo que se espera através da lista por meio de um map
-                          items: tiposParticipante
-                            .map((op) => DropdownMenuItem(
-                              value: op,
-                              child: Text(op),
+                        padding: const EdgeInsets.only(top: 30.0),
+                        child: Center(
+                          child: Stack(
+                            children: [
+                              Container(
+                                width: 130,
+                                height: 130,
+                                decoration: BoxDecoration(
+                                  color: Colors.deepPurple,
+                                  border: Border.all(width: 4, color: Colors.white),
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      spreadRadius: 1,
+                                      blurRadius: 10,
+                                      color: Colors.deepPurple,
+                                    ),
+                                  ],
+                                  shape: BoxShape.circle,
+                                  image: refImage.isNotEmpty
+                                  ?  DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: NetworkImage(refImage),
+                                    )
+                                  : DecorationImage(
+                                      image: Image.asset(
+                                        "images/user_account.png",
+                                        fit: BoxFit.cover,
+                                      ).image,
+                                    ),
+                                ),
+                                // child: Text('100%', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Colors.purple.shade900)),
                               ),
-                            )
-                            .toList(), // É esperado sempre uma lista
-                          // A variável recebe a opção selecionada para controle e inserção
-                          onChanged: (escolha) => setState(() => tipoParticipante = escolha as String),
-                          // Caso seja passado um participante para a tela, é mostrada a opção já cadastrada; se não, é mostrado apenas o título do campo
-                          value: (widget.participante != null) ? widget.participante!.tipoParticipante : null,
-                          decoration: const InputDecoration(
-                            labelText: 'Tipo de Participante',
-                            labelStyle: TextStyle(fontSize: 17.5),
-                            border: OutlineInputBorder(),
-                          ),
-                          validator: (value) {
-                            if(value == null) {
-                              return 'Selecione uma opção';
-                            }
-                          },
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
-                        child: TextFormField(
-                          controller: _nomeController,
-                          decoration: const InputDecoration(
-                            labelText: 'Nome',
-                            labelStyle: TextStyle(fontSize: 17.5),
-                            border: OutlineInputBorder(),
-                          ),
-                          validator: (value) {
-                            if(value == null || value.isEmpty) {
-                              return 'Informe o Nome';
-                            }
-                          }
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
-                        child: TextFormField(
-                          controller: _apelidoController,
-                          decoration: const InputDecoration(
-                            labelText: 'Apelido',
-                            labelStyle: TextStyle(fontSize: 17.5),
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
-                        child: TextFormField(
-                          controller: _contatoController,
-                          decoration: const InputDecoration(
-                            labelText: 'Celular',
-                            hintText: 'Ex: (16) 9 9999-9999',
-                            labelStyle: TextStyle(fontSize: 17.5),
-                            border: OutlineInputBorder(),
-                          ),
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [ contatoMask ],
-                          validator: (value) {
-                            if(value == null || value.isEmpty) {
-                              return 'Informe um número para contato';
-                            }
-                          }
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(bottom: 16.0),
-                        child: TextFormField(
-                          controller: _telFixoController,
-                          decoration: const InputDecoration(
-                            labelText: 'Telefone Fixo',
-                            hintText: 'Ex: 16 3727-0000',
-                            labelStyle: TextStyle(fontSize: 17.5),
-                            border: OutlineInputBorder(),
-                          ),
-                          keyboardType: TextInputType.number,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
-                        child: TextFormField(
-                          controller: _ruaController,
-                          decoration: const InputDecoration(
-                            labelText: 'Rua',
-                            labelStyle: TextStyle(fontSize: 17.5),
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
-                        child: TextFormField(
-                          controller: _bairroController,
-                          decoration: const InputDecoration(
-                            labelText: 'Bairro',
-                            labelStyle: TextStyle(fontSize: 17.5),
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
-                        child: TextFormField(
-                          controller: _cidadeController,
-                          decoration: const InputDecoration(
-                            labelText: 'Cidade',
-                            labelStyle: TextStyle(fontSize: 17.5),
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
-                        child: DropdownButtonFormField(
-                          items: ufList
-                            .map((op) => DropdownMenuItem(
-                              value: op,
-                              child: Text(op),
+                              Positioned(
+                                bottom: 0,
+                                right: 0,
+                                child: Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      width: 3,
+                                      color: Colors.white,
+                                    ),
+                                    color: Colors.deepPurple,
+                                  ),
+                                  child: IconButton(
+                                    padding: const EdgeInsets.only(top: 0),
+                                    icon: const Icon(Icons.edit),
+                                    color: Colors.white,
+                                    onPressed: pickAndUploadImage,
+                                  ),
+                                ),
                               ),
-                            )
-                            .toList(),
-                          onChanged: (escolha) => setState(() => uf = escolha as String),
-                          value: (widget.participante != null) ? widget.participante!.uf : null,
-                          decoration: const InputDecoration(
-                            labelText: 'UF',
-                            labelStyle: TextStyle(fontSize: 17.5),
-                            border: OutlineInputBorder(),
+                            ],
                           ),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
-                        child: TextFormField(
-                          controller: _profissaoController,
-                          decoration: const InputDecoration(
-                            labelText: 'Profissão',
-                            labelStyle: TextStyle(fontSize: 17.5),
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
+                      const SizedBox(height: 30),
+                      TextFormFieldWidget(
+                        label: 'Nome',
+                        controller: _nomeController,
+                        validator: true,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
-                        child: TextFormField(
-                          controller: _formProfController,
-                          decoration: const InputDecoration(
-                            labelText: 'Formação Profissional',
-                            labelStyle: TextStyle(fontSize: 17.5),
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
+                      TextFormFieldWidget(
+                        label: 'Apelido',
+                        controller: _apelidoController,
+                        validator: false,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
-                        child: TextFormField(
-                          controller: _localTrabalhoController,
-                          decoration: const InputDecoration(
-                            labelText: 'Local de Trabalho',
-                            labelStyle: TextStyle(fontSize: 17.5),
-                            border: OutlineInputBorder(),
+                      Row(
+                        children: [
+                          Flexible(
+                            child: TextFormFieldWidget(
+                              label: 'Celular',
+                              controller: _contatoController,
+                              validator: true,
+                              mask: contatoMask,
+                            ),
                           ),
-                        ),
+                          const SizedBox(width: 22),
+                          Flexible(
+                            child: TextFormFieldWidget(
+                              label: 'Telefone',
+                              controller: _telFixoController,
+                              validator: false,
+                              mask: telFixoMask,
+                            ),
+                          ),
+                        ],
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
-                        child: TextFormField(
-                          controller: _dataNascimentoController,
-                          keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(
-                            labelText: 'Data de nascimento',
-                            hintText: '08/12/1987',
-                            labelStyle: TextStyle(fontSize: 17.5),
-                            border: OutlineInputBorder(),
+                      Row(
+                        children: [
+                          Flexible(
+                            child: TextFormFieldWidget(
+                              label: 'Data de Nascimento',
+                              controller: _dataNascimentoController,
+                              validator: false,
+                            ),
                           ),
-                          inputFormatters: [ dataMask ],
-                        ),
+                          const SizedBox(width: 22),
+                          Flexible(
+                            child: DropdownFormFieldWidget(
+                              label: 'Tipo de Participante',
+                              listItems: tiposParticipante,
+                              value: (widget.participante != null) ? widget.participante!.tipoParticipante : null,
+                              validator: true,
+                              onChanged: (escolha) => setState(() => tipoParticipante = escolha as String),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Flexible(
+                            child: DropdownFormFieldWidget(
+                              label: 'UF',
+                              listItems: ufList,
+                              value: (widget.participante != null) ? widget.participante!.uf : null,
+                              validator: true,
+                              onChanged: (escolha) => setState(() => uf = escolha as String),
+                            ),
+                          ),
+                          const SizedBox(width: 22),
+                          Flexible(
+                            flex: 3,
+                            child: TextFormFieldWidget(
+                              label: 'Cidade',
+                              controller: _cidadeController,
+                              validator: false,
+                            ),
+                          ),
+                        ],
+                      ),
+                      TextFormFieldWidget(
+                        label: 'Rua',
+                        controller: _ruaController,
+                        validator: false,
+                      ),
+                      TextFormFieldWidget(
+                        label: 'Bairro',
+                        controller: _bairroController,
+                        validator: false,
+                      ),
+                      TextFormFieldWidget(
+                        label: 'Profissão',
+                        controller: _profissaoController,
+                        validator: false,
+                      ),
+                      TextFormFieldWidget(
+                        label: 'Formação Profissional',
+                        controller: _formProfController,
+                        validator: false,
+                      ),
+                      TextFormFieldWidget(
+                        label: 'Local de Trabalho',
+                        controller: _localTrabalhoController,
+                        validator: false,
                       ),
                     ],
                   ),
                 ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  // Alert que lista as reuniões cadastradas para vincular ao participante
-                  TextButton(
-                    child: const Text('Selecione uma reunião'),
-                    style: TextButton.styleFrom(
-                      backgroundColor: Colors.purple[100],
-                    ),
-                    onPressed: () => showDialog(
-                      context: context,
-                      builder: (_) => AlertDialog(
-                        title: const Text('Selecione uma reunião'),
-                        scrollable: true,
-                        content: Column(
-                          children: [
-                            for(CheckboxModel reuniao in reunioes)
-                              CheckboxWidget(item: reuniao)
-                          ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      // Alert que lista as reuniões cadastradas para vincular ao participante
+                      TextButton(
+                        child: const Text('Selecione uma reunião'),
+                        style: TextButton.styleFrom(
+                          backgroundColor: Colors.deepPurple[100],
                         ),
-                        actions: [
-                          ElevatedButton(
-                            child: const Text('Confirmar'),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                              listarSelecionados();
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  // Botão para cadastrar novo participante ou salvar as alterações no participante selecionado
-                  ElevatedButton(
-                    // Se não for recebido um objeto do tipo 'Reunião' o botão assume o primeiro texto, se não, o segundo
-                    child: (widget.participante != null)
-                      ? const Text("Salvar Alterações")
-                      : const Text("Confirmar Cadastro"),
-                    onPressed: () {
-                      // Se foi passado o objeto para a página, abre-se um dialog a respeito do update
-                      (widget.participante != null)
-                        ? showDialog(
+                        onPressed: () => showDialog(
                           context: context,
                           builder: (_) => AlertDialog(
-                            title: Text("Atualizar dados da reunião ${widget.participante!.nome}?"),
+                            title: const Text('Selecione uma reunião'),
+                            scrollable: true,
+                            content: Column(
+                              children: [
+                                for(CheckboxModel reuniao in reunioes)
+                                  CheckboxWidget(item: reuniao)
+                              ],
+                            ),
                             actions: [
                               ElevatedButton(
-                                onPressed: () => Navigator.of(context).pop(),
-                                child: const Text("Cancelar")
-                              ),
-                              ElevatedButton(
+                                child: const Text('Confirmar'),
                                 onPressed: () {
-                                  update(widget.participante!.id);
                                   Navigator.of(context).pop();
+                                  listarSelecionados();
                                 },
-                                child: const Text("Atualizar")
-                              )
+                              ),
                             ],
                           ),
-                        )
-                        : sendData();
-                    },
+                        ),
+                      ),
+                      // Botão para cadastrar novo participante ou salvar as alterações no participante selecionado
+                      ElevatedButton(
+                        // Se não for recebido um objeto do tipo 'Reunião' o botão assume o primeiro texto, se não, o segundo
+                        child: (widget.participante != null)
+                          ? const Text("Salvar Alterações")
+                          : const Text("Confirmar Cadastro"),
+                        onPressed: () {
+                          // Se foi passado o objeto para a página, abre-se um dialog a respeito do update
+                          (widget.participante != null)
+                            ? showDialog(
+                              context: context,
+                              builder: (_) => AlertDialog(
+                                title: Text("Atualizar dados da reunião ${widget.participante!.nome}?"),
+                                actions: [
+                                  ElevatedButton(
+                                    onPressed: () => Navigator.of(context).pop(),
+                                    child: const Text("Cancelar")
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      update(widget.participante!.id);
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text("Atualizar")
+                                  )
+                                ],
+                              ),
+                            )
+                            : sendData();
+                        },
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -564,6 +545,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
 
     return reunioesMarcadas;
   }
+
 
   // Função para comprimir a imagem antes de enviar para o banco
   Future<File> compressImage(String filePath) async {

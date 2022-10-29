@@ -1,36 +1,51 @@
 import 'package:flutter/material.dart';
 
-class DropdownFormFieldWidget extends StatelessWidget {
+class DropdownFormFieldWidget extends StatefulWidget {
   DropdownFormFieldWidget({
     Key? key,
-    required this.listItems,
     required this.label,
+    required this.listItems,
     this.value,
     required this.validator,
-    required this.optionChanged
+    required this.onChanged,
     }) : super(key: key);
 
   List<String> listItems;
   String label;
   String? value;
   bool validator;
-  final Function? optionChanged;
+  ValueChanged onChanged;
+
+  @override
+  State<DropdownFormFieldWidget> createState() => _DropdownFormFieldWidgetState();
+}
+
+class _DropdownFormFieldWidgetState extends State<DropdownFormFieldWidget> {
+
+  late String selectedItem;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    selectedItem = widget.listItems[0];
+  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 25.0),
       child: DropdownButtonFormField(
-        items: listItems
+        items: widget.listItems
           .map((op) => DropdownMenuItem(
             value: op,
             child: Text(op),
           ),
         ).toList(),
-        value: value,
+        value: widget.value,
         decoration: InputDecoration(
           contentPadding: const EdgeInsets.fromLTRB(12, 16.4, 15, 16.4),
-          labelText: label,
+          labelText: widget.label,
           floatingLabelBehavior: FloatingLabelBehavior.always,
           labelStyle: const TextStyle(
             fontSize: 19,
@@ -45,7 +60,7 @@ class DropdownFormFieldWidget extends StatelessWidget {
             borderSide: BorderSide(width: 1.5, color: Colors.deepPurple,),
           ),
         ),
-        validator: validator
+        validator: widget.validator
         ? (value) {
           if(value == null) {
               return 'Selecione uma opção';
@@ -53,12 +68,8 @@ class DropdownFormFieldWidget extends StatelessWidget {
             return null;
           }
         : null,
-        onChanged: (escolha) => optionChanged,
+        onChanged: widget.onChanged,
       ),
     );
-  }
-
-  String tipo(String escolha) {
-    return escolha;
   }
 }

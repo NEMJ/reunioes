@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:reunioes/pages/lab_participante_detail_page.dart';
-import 'package:reunioes/pages/participante/new_participante_detail_page.dart';
 import 'package:reunioes/pages/participante/participante_detail_page.dart';
 import 'package:reunioes/models/participante_model.dart';
 
@@ -219,7 +217,7 @@ class _ParticipantesListPageState extends State<ParticipantesListPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => NewParticipanteDetailPage(),
+                      builder: (_) => ParticipanteDetailPage(),
                     ),
                   );
                 },
@@ -266,7 +264,7 @@ class _ParticipantesListPageState extends State<ParticipantesListPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => LabParticipanteDetailPage(participante: participante),
+        builder: (_) => ParticipanteDetailPage(participante: participante),
       ),
     );
   }
