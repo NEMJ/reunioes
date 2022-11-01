@@ -13,7 +13,7 @@ class ParticipantesListPage extends StatefulWidget {
 
 class _ParticipantesListPageState extends State<ParticipantesListPage> {
 
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
   
   // Instancia do Firestore
   FirebaseFirestore db = FirebaseFirestore.instance;
@@ -25,7 +25,8 @@ class _ParticipantesListPageState extends State<ParticipantesListPage> {
   // Instancia do Firebase Storage
   final FirebaseStorage storage = FirebaseStorage.instance;
 
-  int _filterValue = 0;
+  int _filterValue = 1;
+  String tipoFiltro = 'nome';
 
   @override
   void initState() {
@@ -87,18 +88,63 @@ class _ParticipantesListPageState extends State<ParticipantesListPage> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               Container(
-                margin: EdgeInsets.only(bottom: 7),
+                margin: const EdgeInsets.only(bottom: 7),
                 decoration: BoxDecoration(
-                  color: Colors.purple.shade100,
+                  color: Colors.deepPurple.shade100,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: TextField(
                   onChanged: (value) {
-                    setState(() {
-                      // Insere elementos na lista de filtragem conforme satisfeita a condição de pesquisa
-                      participantesListOnSearch = participantesList
-                        .where((element) => element.nome.toLowerCase().contains(value.toLowerCase())).toList();
-                    });
+                    switch (tipoFiltro) {
+                      case 'nome':
+                        setState(() {
+                          // Insere elementos na lista de filtragem conforme satisfeita a condição de pesquisa
+                          participantesListOnSearch = participantesList
+                            .where((element) => element.nome.toLowerCase().contains(value.toLowerCase())).toList();
+                        });
+                        break;
+                      case 'tipoParticipante':
+                        setState(() {
+                          // Lista auxiliar com apenas o tipo de participante selecionado
+                          List<Participante> searchParticipante = participantesList
+                            .where((element) => element.tipoParticipante.toLowerCase().contains('participante')).toList();
+
+                          participantesListOnSearch = searchParticipante
+                            .where((element) => element.nome.toLowerCase().contains(value.toLowerCase())).toList();
+                        });
+                        break;
+                      case 'tipoEntidade':
+                        setState(() {
+                          List<Participante> searchEntidade = participantesList
+                            .where((element) => element.tipoParticipante.toLowerCase().contains('entidade')).toList();
+
+                          participantesListOnSearch = searchEntidade
+                            .where((element) => element.nome.toLowerCase().contains(value.toLowerCase())).toList();
+                        });
+                        break;
+                      case 'tipoDirigente':
+                        setState(() {
+                          List<Participante> searchDirigente = participantesList
+                            .where((element) => element.tipoParticipante.toLowerCase().contains('dirigente')).toList();
+
+                          participantesListOnSearch = searchDirigente
+                            .where((element) => element.nome.toLowerCase().contains(value.toLowerCase())).toList();
+                        });
+                        break;
+                      case 'profissao':
+                        setState(() {
+                          participantesListOnSearch = participantesList
+                            .where((element) => element.profissao.toLowerCase().contains(value.toLowerCase())).toList();
+                        });
+                        break;
+                      case 'formacaoProfissional':
+                        setState(() {
+                          participantesListOnSearch = participantesList
+                            .where((element) => element.formProf.toLowerCase().contains(value.toLowerCase())).toList();
+                        });
+                        break;
+                      default:
+                    }
                   },
                   controller: _searchController,
                   decoration: InputDecoration(
@@ -106,57 +152,15 @@ class _ParticipantesListPageState extends State<ParticipantesListPage> {
                     errorBorder: InputBorder.none,
                     enabledBorder: InputBorder.none,
                     focusedBorder: InputBorder.none,
-                    contentPadding: EdgeInsets.all(15),
+                    contentPadding: const EdgeInsets.all(15),
                     hintText: 'Pesquisar',
-                    prefixIcon: Icon(Icons.search),
+                    prefixIcon: const Icon(Icons.search),
                     suffixIcon: IconButton(
-                      icon: Icon(Icons.filter_list_outlined),
+                      icon: const Icon(Icons.filter_list_outlined),
                       onPressed: () => showDialog(
                         context: context,
-                        builder: (_) => AlertDialog(
-                          title: Text("Filtrar por", style: TextStyle(fontWeight: FontWeight.bold)),
-                          content: StatefulBuilder(
-                            builder: (context, setState) {
-                              return SizedBox(
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    RadioListTile(
-                                      value: 1,
-                                      groupValue: _filterValue,
-                                      title: Text("Radio 1"),
-                                      onChanged: (int? value) {
-                                        setState(() => _filterValue = value!);
-                                     },
-                                    ),
-                                    RadioListTile(
-                                      value: 2,
-                                      groupValue: _filterValue,
-                                      title: Text("Radio 2"),
-                                      onChanged: (int? value) {
-                                        setState(() => _filterValue = value!);
-                                      },
-                                    ),
-                                    RadioListTile(
-                                      value: 3,
-                                      groupValue: _filterValue,
-                                      title: Text("Radio 3"),
-                                      onChanged: (int? value) {
-                                        setState(() => _filterValue = value!);
-                                     },
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }
-                          ),
-                        ),
+                        builder: (_) => alertDialogOptions(),
                       ),
-                      //   participantesListOnSearch.clear();
-                      //   setState(() {
-                      //     _searchController.text = '';
-                      //   });
-                      // },
                     ),
                   ),
                 ),
@@ -220,7 +224,7 @@ class _ParticipantesListPageState extends State<ParticipantesListPage> {
                           onPressed: () => showDialog(
                             context: context,
                             builder: (_) => AlertDialog(
-                              title: Text("Deseja relamente excluir o participante ${
+                              title: Text("Deseja realmente excluir o participante ${
                                 _searchController.text.isNotEmpty
                                 ? participantesListOnSearch[index].nome
                                 : participantesList[index].nome
@@ -310,5 +314,100 @@ class _ParticipantesListPageState extends State<ParticipantesListPage> {
 
   void delete(String id) async {
     db.collection('participantes').doc(id).delete();
+  }
+
+  Widget alertDialogOptions() {
+    return AlertDialog(
+      title: const Text("Filtrar por", style: TextStyle(fontWeight: FontWeight.bold)),
+      content: StatefulBuilder(
+        builder: (context, setState) {
+          return SizedBox(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                RadioListTile(
+                  value: 1,
+                  groupValue: _filterValue,
+                  title: const Text("Nome"),
+                  onChanged: (int? value) {
+                    setState(() {
+                      _filterValue = value!;
+                      tipoFiltro = 'nome';
+                      participantesListOnSearch.clear();
+                      _searchController.text = '';
+                    });
+                  },
+                ),
+                RadioListTile(
+                  value: 2,
+                  groupValue: _filterValue,
+                  title: const Text("Tipo Participante"),
+                  onChanged: (int? value) {
+                    setState(() {
+                      _filterValue = value!;
+                      tipoFiltro = 'tipoParticipante';
+                      participantesListOnSearch.clear();
+                      _searchController.text = '';
+                    });
+                  },
+                ),
+                RadioListTile(
+                  value: 3,
+                  groupValue: _filterValue,
+                  title: const Text("Tipo Entidade"),
+                  onChanged: (int? value) {
+                    setState(() {
+                      _filterValue = value!;
+                      tipoFiltro = 'tipoEntidade';
+                      participantesListOnSearch.clear();
+                      _searchController.text = '';
+                    });
+                  },
+                ),
+                RadioListTile(
+                  value: 4,
+                  groupValue: _filterValue,
+                  title: const Text("Tipo Dirigente"),
+                  onChanged: (int? value) {
+                    setState(() {
+                      _filterValue = value!;
+                      tipoFiltro = 'tipoDirigente';
+                      participantesListOnSearch.clear();
+                      _searchController.text = '';
+                    });
+                  },
+                ),
+                RadioListTile(
+                  value: 5,
+                  groupValue: _filterValue,
+                  title: const Text("Profissão"),
+                  onChanged: (int? value) {
+                    setState(() {
+                      _filterValue = value!;
+                      tipoFiltro = 'profissao';
+                      participantesListOnSearch.clear();
+                      _searchController.text = '';
+                    });
+                  },
+                ),
+                RadioListTile(
+                  value: 6,
+                  groupValue: _filterValue,
+                  title: const Text("Formação Profissional"),
+                  onChanged: (int? value) {
+                    setState(() {
+                      _filterValue = value!;
+                      tipoFiltro = 'formacaoProfissional';
+                      participantesListOnSearch.clear();
+                      _searchController.text = '';
+                    });
+                  },
+                ),
+              ],
+            ),
+          );
+        }
+      ),
+    );
   }
 }

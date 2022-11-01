@@ -10,12 +10,12 @@ class Participante {
     required this.rua,
     required this.bairro,
     required this.cidade,
-    required this. uf,
+    required this.uf,
     required this.contato,
     required this.telFixo,
-    required this. profissao,
+    required this.profissao,
     required this.formProf,
-    required this. localTrabalho,
+    required this.localTrabalho,
     required this.dataNascimento,
   });
   
