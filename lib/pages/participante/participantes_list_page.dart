@@ -25,11 +25,10 @@ class _ParticipantesListPageState extends State<ParticipantesListPage> {
   // Instancia do Firebase Storage
   final FirebaseStorage storage = FirebaseStorage.instance;
 
+  int _filterValue = 0;
+
   @override
   void initState() {
-    // Download das imagens relacionadas aos participantes cadastrados
-    // loadImages();
-
     // Inicialização dos Dados
     initFirestore();
 
@@ -111,13 +110,53 @@ class _ParticipantesListPageState extends State<ParticipantesListPage> {
                     hintText: 'Pesquisar',
                     prefixIcon: Icon(Icons.search),
                     suffixIcon: IconButton(
-                      icon: Icon(Icons.close),
-                      onPressed: () {
-                        participantesListOnSearch.clear();
-                        setState(() {
-                          _searchController.text = '';
-                        });
-                      },
+                      icon: Icon(Icons.filter_list_outlined),
+                      onPressed: () => showDialog(
+                        context: context,
+                        builder: (_) => AlertDialog(
+                          title: Text("Filtrar por", style: TextStyle(fontWeight: FontWeight.bold)),
+                          content: StatefulBuilder(
+                            builder: (context, setState) {
+                              return SizedBox(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    RadioListTile(
+                                      value: 1,
+                                      groupValue: _filterValue,
+                                      title: Text("Radio 1"),
+                                      onChanged: (int? value) {
+                                        setState(() => _filterValue = value!);
+                                     },
+                                    ),
+                                    RadioListTile(
+                                      value: 2,
+                                      groupValue: _filterValue,
+                                      title: Text("Radio 2"),
+                                      onChanged: (int? value) {
+                                        setState(() => _filterValue = value!);
+                                      },
+                                    ),
+                                    RadioListTile(
+                                      value: 3,
+                                      groupValue: _filterValue,
+                                      title: Text("Radio 3"),
+                                      onChanged: (int? value) {
+                                        setState(() => _filterValue = value!);
+                                     },
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                          ),
+                        ),
+                      ),
+                      //   participantesListOnSearch.clear();
+                      //   setState(() {
+                      //     _searchController.text = '';
+                      //   });
+                      // },
                     ),
                   ),
                 ),
