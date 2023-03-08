@@ -10,8 +10,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:reunioes/widgets/checkbox_widget.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
-
 import 'package:reunioes/widgets/dropdown_form_field_widget.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:csv/csv.dart';
+import 'dart:convert';
 
 class ParticipanteDetailPage extends StatefulWidget {
   ParticipanteDetailPage({
@@ -159,6 +161,12 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
         title: uploading
           ? Text('${total.round()}% enviado')
           : Text(title),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.upload),
+            onPressed: picker_file,
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 22),
@@ -599,5 +607,41 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
         }
       });
     }
+  }
+
+
+
+
+
+  void picker_file() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    csvToString(result);
+  }
+
+  void csvToString(FilePickerResult? result) async {
+    if(result != null) {
+      var file = File(result.files.single.path!).openRead();
+      List<List<String>> csv_string = [];
+
+      var csv = await file
+        .transform(utf8.decoder)
+        .transform(const CsvToListConverter())
+        .toList();
+
+      csv.removeAt(0);
+
+      for(var i = 0; i < csv.length; i++) {
+        csv_string.add(csv[i] as List<String>);
+        // csv[i].forEach((e) => csv_string.add(e));
+        sendParticipante(csv_string);
+        csv_string.clear();
+      }
+
+    }
+  }
+
+  void sendParticipante(List<List<String>> participante) async {
+    participante.forEach((e) => debugPrint(e.length.toString()));
+    // return;
   }
 }
