@@ -621,7 +621,6 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
   void csvToString(FilePickerResult? result) async {
     if(result != null) {
       var file = File(result.files.single.path!).openRead();
-      List<List<String>> csv_string = [];
 
       var csv = await file
         .transform(utf8.decoder)
@@ -630,18 +629,46 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
 
       csv.removeAt(0);
 
-      for(var i = 0; i < csv.length; i++) {
-        csv_string.add(csv[i] as List<String>);
-        // csv[i].forEach((e) => csv_string.add(e));
-        sendParticipante(csv_string);
-        csv_string.clear();
-      }
+      csv.forEach((list) {
+        List<String> str = list.toString().split(';');
+        str[str.length - 1] = str[str.length - 1].replaceAll(']', '');
 
+        str.removeAt(0);
+        
+        // debugPrint(str.toString());
+        sendCsvToFirebase(str);
+      });
     }
   }
 
-  void sendParticipante(List<List<String>> participante) async {
-    participante.forEach((e) => debugPrint(e.length.toString()));
-    // return;
+  void sendCsvToFirebase(List<String> list) {
+    String id_csv = const Uuid().v1();
+
+    db.collection('participantes').doc(id_csv).set({
+      'id': id_csv,
+      'refImage' : '',
+      'tipoParticipante': 'Participante',
+      'reunioes': [],
+      'nome': list[0],
+      'apelido': list[1],
+      'rua': list[5],
+      'bairro': list[6],
+      'cidade': list[7],
+      'uf': list[8],
+      'contato': list[2],
+      'telFixo': list[3],
+      'profissao': list[9],
+      'formProf': list[10],
+      'localTrabalho': list[11],
+      'dataNascimento': list[4],
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Participantes cadastrados com sucesso"),
+      ),
+    );
+
+    return;
   }
 }
