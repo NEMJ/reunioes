@@ -115,7 +115,7 @@ class _ParticipanteDetailPageState extends State<ParticipanteDetailPage> {
       id = const Uuid().v1();
     }
 
-    db.collection('reunioes').snapshots().listen((query) {
+    db.collection('reunioes').orderBy("descricao").snapshots().listen((query) {
       reunioes = [];
       if(query.docs.isEmpty) {
         setState((){});
