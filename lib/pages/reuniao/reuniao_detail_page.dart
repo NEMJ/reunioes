@@ -108,8 +108,8 @@ class _ReuniaoDetailPageState extends State<ReuniaoDetailPage> {
                         validator: (value) {
                           if(value == null || value.isEmpty) {
                             return 'Campo obrigatório';
-                          } else if(value.length > 30) {
-                            return 'Máximo 30 caracteres';
+                          } else if(value.length > 50) {
+                            return 'Máximo 50 caracteres';
                           } else {
                             return null;
                           }
